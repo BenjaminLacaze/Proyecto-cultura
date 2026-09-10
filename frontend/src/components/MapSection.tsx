@@ -75,10 +75,12 @@ function MapController({ activePoint }: { activePoint: CulturalPoint | null }) {
 const MapSection: React.FC<MapSectionProps> = ({ activePoint, setActivePoint }) => {
 
   return (
-    <div className="relative w-full h-screen bg-slate-200">
-      <MapContainer 
-        center={[-36.3132, -57.6792]} 
-        zoom={15} 
+    // Mobile: altura = pantalla menos la navbar (~56px)
+    // Desktop: altura = pantalla completa (la navbar es sidebar lateral)
+    <div className="relative w-full h-[calc(100svh-56px)] md:h-screen bg-slate-200">
+      <MapContainer
+        center={[-36.3132, -57.6792]}
+        zoom={15}
         minZoom={13}
         maxBounds={doloresBounds}
         maxBoundsViscosity={1.0}
@@ -91,8 +93,8 @@ const MapSection: React.FC<MapSectionProps> = ({ activePoint, setActivePoint }) 
         />
         <MapController activePoint={activePoint} />
         {points.map((point) => (
-          <Marker 
-            key={point.id} 
+          <Marker
+            key={point.id}
             position={point.position}
             eventHandlers={{
               click: () => setActivePoint(point),
@@ -101,13 +103,58 @@ const MapSection: React.FC<MapSectionProps> = ({ activePoint, setActivePoint }) 
         ))}
       </MapContainer>
 
-      {/* Original Floating Info Card (Left) */}
+      {/* ── MOBILE: bottom sheet ── */}
       {activePoint && (
-        <div className="absolute top-8 left-8 z-[20] w-80 bg-white rounded-xl shadow-2xl overflow-hidden transition-all duration-300 transform translate-y-0">
+        <div className="md:hidden absolute bottom-0 left-0 right-0 z-[20] bg-white rounded-t-2xl shadow-2xl overflow-hidden transition-all duration-300 max-h-[65vh] flex flex-col">
+          {/* Drag handle visual */}
+          <div className="flex justify-center pt-3 pb-1 flex-shrink-0">
+            <div className="w-10 h-1 bg-slate-300 rounded-full" />
+          </div>
+          <div className="relative h-40 w-full flex-shrink-0">
+            <img
+              src={activePoint.image}
+              alt={activePoint.title}
+              className="w-full h-full object-cover"
+            />
+            <button
+              onClick={() => setActivePoint(null)}
+              className="absolute top-3 right-3 bg-black/60 text-white rounded-full p-1.5 hover:bg-black/80 transition"
+            >
+              <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+                <path fillRule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clipRule="evenodd" />
+              </svg>
+            </button>
+          </div>
+          <div className="p-4 overflow-y-auto flex-grow">
+            <span className="text-xs font-bold uppercase tracking-widest text-orange-500 mb-1 block">
+              {activePoint.category}
+            </span>
+            <h4 className="text-xl font-extrabold text-slate-800 mb-2">{activePoint.title}</h4>
+            <p className="text-sm text-slate-600 mb-4 leading-relaxed">
+              {activePoint.description}
+            </p>
+            <div className="mb-2">
+              <h5 className="text-xs font-bold text-slate-800 mb-2 uppercase tracking-wider">Galería</h5>
+              <div className="grid grid-cols-2 gap-2">
+                <img src={activePoint.image} alt="Vista 1" className="w-full h-20 object-cover rounded-lg shadow-sm" />
+                <img src="https://images.unsplash.com/photo-1518998053401-878c73fd5f17?auto=format&fit=crop&q=80&w=400" alt="Vista 2" className="w-full h-20 object-cover rounded-lg shadow-sm" />
+              </div>
+            </div>
+            <div className="mt-4 pt-3 border-t border-slate-100 flex items-center justify-between text-xs text-slate-500">
+              <span>Desarrollado por</span>
+              <img src={developerLogo} alt="Logo del Desarrollador" className="h-5 w-auto object-contain opacity-75 hover:opacity-100 transition-opacity" />
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* ── DESKTOP: floating card left (original) ── */}
+      {activePoint && (
+        <div className="hidden md:block absolute top-8 left-8 z-[20] w-80 bg-white rounded-xl shadow-2xl overflow-hidden transition-all duration-300 transform translate-y-0">
           <div className="relative h-48 w-full">
-            <img 
-              src={activePoint.image} 
-              alt={activePoint.title} 
+            <img
+              src={activePoint.image}
+              alt={activePoint.title}
               className="w-full h-full object-cover"
             />
           </div>
@@ -126,16 +173,16 @@ const MapSection: React.FC<MapSectionProps> = ({ activePoint, setActivePoint }) 
         </div>
       )}
 
-      {/* Detailed Info Screen (Right) */}
+      {/* ── DESKTOP: detailed info card right (original) ── */}
       {activePoint && (
-        <div className="absolute top-8 right-8 z-[20] w-96 bg-white rounded-xl shadow-2xl overflow-hidden transition-all duration-300 transform translate-y-0 flex flex-col max-h-[85vh]">
+        <div className="hidden md:flex absolute top-8 right-8 z-[20] w-96 bg-white rounded-xl shadow-2xl overflow-hidden transition-all duration-300 transform translate-y-0 flex-col max-h-[85vh]">
           <div className="relative h-56 w-full flex-shrink-0">
-            <img 
-              src={activePoint.image} 
-              alt={activePoint.title} 
+            <img
+              src={activePoint.image}
+              alt={activePoint.title}
               className="w-full h-full object-cover"
             />
-            <button 
+            <button
               onClick={() => setActivePoint(null)}
               className="absolute top-3 right-3 bg-black/60 text-white rounded-full p-1.5 hover:bg-black/80 transition"
             >
@@ -144,17 +191,17 @@ const MapSection: React.FC<MapSectionProps> = ({ activePoint, setActivePoint }) 
               </svg>
             </button>
           </div>
-          
+
           <div className="p-6 overflow-y-auto flex-grow">
             <span className="text-xs font-bold uppercase tracking-widest text-orange-500 mb-2 block">
               {activePoint.category}
             </span>
             <h4 className="text-2xl font-extrabold text-slate-800 mb-3">{activePoint.title}</h4>
-            
+
             <p className="text-base text-slate-600 mb-6 leading-relaxed">
               {activePoint.description}
             </p>
-            
+
             <div className="mb-2">
               <h5 className="text-sm font-bold text-slate-800 mb-3 uppercase tracking-wider">Galería</h5>
               <div className="grid grid-cols-2 gap-2">
