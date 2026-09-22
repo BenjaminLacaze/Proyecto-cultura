@@ -1,0 +1,26 @@
+[
+  {
+    "title": "Plaza Moreno",
+    "category": "Plaza",
+    "section": "plazas",
+    "position": [
+      -36.31822,
+      -57.68558
+    ],
+    "description": "Plaza de la ciudad de dolores",
+    "image": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcR74KG1mvyjnzSqAMyveqvUkbDjVhsdWxORXjN3jDdZOSILlniFhzwrkEKI&s=10",
+    "id": 1
+  },
+  {
+    "title": "Parque Libres del Sur",
+    "category": "Plaza",
+    "section": "plazas",
+    "position": [
+      -36.32092,
+      -57.69361
+    ],
+    "description": "Parque de la ciudad",
+    "image": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcR74KG1mvyjnzSqAMyveqvUkbDjVhsdWxORXjN3jDdZOSILlniFhzwrkEKI&s=10",
+    "id": 2
+  }
+]

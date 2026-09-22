@@ -3,12 +3,11 @@ import Navbar from './components/Navbar';
 import MapSection from './components/MapSection';
 import type { CulturalPoint } from './components/MapSection';
 import Footer from './components/Footer';
+import SettingsPanel from './components/SettingsPanel';
 
 function App() {
   const [activePoint, setActivePoint] = useState<CulturalPoint | null>(null);
   return (
-    // Mobile: flex-col (navbar arriba, mapa abajo)
-    // Desktop: flex-row (sidebar izquierdo, contenido a la derecha) — igual que antes
     <div className="min-h-screen flex flex-col md:flex-row font-sans bg-white">
       <Navbar onPointSelect={setActivePoint} />
 
@@ -21,6 +20,8 @@ function App() {
 
         <Footer />
       </div>
+
+      <SettingsPanel />
     </div>
   );
 }
