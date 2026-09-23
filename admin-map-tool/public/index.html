@@ -48,14 +48,19 @@
                     </select>
                 </div>
 
-                <div>
-                    <label class="block text-sm font-semibold text-slate-700 mb-1">Descripción</label>
-                    <textarea id="description" required rows="3" class="w-full border border-slate-300 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-orange-500 focus:border-orange-500 outline-none transition-all" placeholder="Breve reseña del lugar..."></textarea>
+                <div class="mt-4">
+                    <label class="block text-sm font-semibold text-slate-700 mb-1">Imagen de Fondo Principal</label>
+                    <input type="url" id="image" class="w-full border border-slate-300 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-orange-500 focus:border-orange-500 outline-none transition-all" placeholder="URL de la imagen de fondo (opcional)">
                 </div>
 
-                <div>
-                    <label class="block text-sm font-semibold text-slate-700 mb-1">URL de Imagen (Unsplash, etc.)</label>
-                    <input type="url" id="image" required class="w-full border border-slate-300 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-orange-500 focus:border-orange-500 outline-none transition-all" placeholder="https://images.unsplash.com/...">
+                <div class="mt-4">
+                    <div class="flex items-center justify-between mb-2">
+                        <label class="block text-sm font-semibold text-slate-700">Pantallas (Cards)</label>
+                        <button type="button" id="addScreenBtn" class="text-xs bg-orange-100 text-orange-600 px-2 py-1 rounded hover:bg-orange-200 font-bold transition-colors">+ Añadir Pantalla</button>
+                    </div>
+                    <div id="screensContainer" class="flex flex-col gap-3">
+                        <!-- Pantallas generadas dinamicamente -->
+                    </div>
                 </div>
 
                 <div class="pt-4">
@@ -178,13 +183,20 @@
         form.addEventListener('submit', (e) => {
             e.preventDefault();
             
+            const screens = Array.from(document.querySelectorAll('.screen-item')).map(screenDiv => {
+                return {
+                    image: screenDiv.querySelector('.screen-image').value,
+                    text: screenDiv.querySelector('.screen-text').value
+                };
+            });
+
             const newPointData = {
                 title: document.getElementById('title').value,
                 category: document.getElementById('category').value,
                 section: document.getElementById('section').value,
+                image: document.getElementById('image').value,
                 position: [ parseFloat(latInput.value), parseFloat(lngInput.value) ],
-                description: document.getElementById('description').value,
-                image: document.getElementById('image').value
+                screens: screens
             };
 
             submitBtn.disabled = true;
@@ -204,6 +216,9 @@
                 form.reset();
                 // Restaurar inputs coords
                 updateInputs(newMarker.getLatLng());
+                // Resetear pantallas a 1 sola
+                document.getElementById('screensContainer').innerHTML = '';
+                addScreen();
 
                 // Agregar el marcador recien creado al mapa
                 const marker = L.marker(newPointData.position, { icon: blueIcon })
@@ -226,6 +241,30 @@
                 submitBtn.innerText = 'Guardar Punto';
             });
         });
+        // Lógica de pantallas dinámicas
+        const screensContainer = document.getElementById('screensContainer');
+        const addScreenBtn = document.getElementById('addScreenBtn');
+
+        function addScreen() {
+            const index = screensContainer.children.length + 1;
+            const div = document.createElement('div');
+            div.className = 'screen-item bg-slate-50 p-3 rounded-lg border border-slate-200 relative';
+            div.innerHTML = `
+                <div class="flex justify-between items-center mb-2">
+                    <span class="text-xs font-bold text-slate-500 uppercase">Pantalla ${index}</span>
+                    ${index > 1 ? `<button type="button" class="text-xs text-red-500 hover:text-red-700 font-bold" onclick="this.parentElement.parentElement.remove()">Quitar</button>` : ''}
+                </div>
+                <input type="url" class="screen-image w-full border border-slate-300 rounded px-2 py-1.5 text-xs focus:ring-1 focus:ring-orange-500 outline-none mb-2" placeholder="URL de Imagen (opcional)">
+                <textarea rows="2" class="screen-text w-full border border-slate-300 rounded px-2 py-1.5 text-xs focus:ring-1 focus:ring-orange-500 outline-none" placeholder="Texto de esta pantalla (opcional)"></textarea>
+            `;
+            screensContainer.appendChild(div);
+        }
+
+        addScreenBtn.addEventListener('click', addScreen);
+        
+        // Inicializar con 1 pantalla
+        addScreen();
+
     </script>
 </body>
 </html>

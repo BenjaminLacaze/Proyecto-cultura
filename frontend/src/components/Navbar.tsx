@@ -5,6 +5,8 @@ import culturaLogo from '../assets/cultura-logo.png';
 
 interface NavbarProps {
   onPointSelect: (point: CulturalPoint) => void;
+  onShowContact: () => void;
+  onShowAgenda: () => void;
 }
 
 // Configuración de cada sección
@@ -96,7 +98,7 @@ const SectionList: React.FC<{
   );
 };
 
-const Navbar: React.FC<NavbarProps> = ({ onPointSelect }) => {
+const Navbar: React.FC<NavbarProps> = ({ onPointSelect, onShowContact, onShowAgenda }) => {
   const [menuOpen, setMenuOpen] = useState(false);
 
   const handlePointSelect = (point: CulturalPoint) => {
@@ -183,11 +185,11 @@ const Navbar: React.FC<NavbarProps> = ({ onPointSelect }) => {
 
         {/* Nav links */}
         <div className="flex flex-col gap-1 mb-4">
-          <a href="#" className="group flex items-center gap-2 text-orange-500 font-semibold hover:bg-orange-50 transition-colors px-3 py-2.5 rounded-xl text-base border border-transparent hover:border-orange-200">
+          <a href="#" onClick={(e) => { e.preventDefault(); onShowAgenda(); setMenuOpen(false); }} className="group flex items-center gap-2 text-orange-500 font-semibold hover:bg-orange-50 transition-colors px-3 py-2.5 rounded-xl text-base border border-transparent hover:border-orange-200">
             <span className="font-bold text-lg leading-none group-hover:translate-x-0.5 transition-transform">›</span>
             Agenda
           </a>
-          <a href="#" className="group flex items-center gap-2 text-amber-500 font-semibold hover:bg-amber-50 transition-colors px-3 py-2.5 rounded-xl text-base border border-transparent hover:border-amber-200">
+          <a href="#" onClick={(e) => { e.preventDefault(); onShowContact(); setMenuOpen(false); }} className="group flex items-center gap-2 text-amber-500 font-semibold hover:bg-amber-50 transition-colors px-3 py-2.5 rounded-xl text-base border border-transparent hover:border-amber-200">
             <span className="font-bold text-lg leading-none group-hover:translate-x-0.5 transition-transform">›</span>
             Contacto
           </a>
@@ -203,7 +205,7 @@ const Navbar: React.FC<NavbarProps> = ({ onPointSelect }) => {
         {/* Tres secciones */}
         <div className="flex flex-col gap-3">
           {SECTIONS.map((section) => (
-            <SectionList key={section.key} section={section} onSelect={onPointSelect} />
+            <SectionList key={section.key} section={section} onSelect={handlePointSelect} />
           ))}
         </div>
       </div>

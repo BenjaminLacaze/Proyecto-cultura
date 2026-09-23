@@ -20,8 +20,11 @@ export interface CulturalPoint {
   category: string;
   section: 'encuentro' | 'interes' | 'plazas';
   position: [number, number];
-  description: string;
   image: string;
+  screens: {
+    image?: string;
+    text?: string;
+  }[];
 }
 
 import pointsData from '../data/points.json';
@@ -54,7 +57,8 @@ const PointInfoPanel: React.FC<{
   onClose: () => void;
 }> = ({ point, onClose }) => {
   const [activeCard, setActiveCard] = useState(0);
-  const CARD_COUNT = 3;
+  const screens = point.screens || [];
+  const CARD_COUNT = Math.max(1, screens.length);
 
   const prev = () => setActiveCard(c => Math.max(0, c - 1));
   const next = () => setActiveCard(c => Math.min(CARD_COUNT - 1, c + 1));
@@ -111,11 +115,28 @@ const PointInfoPanel: React.FC<{
   const cardClass = 'w-[93vw] md:w-[660px] bg-white rounded-2xl shadow-2xl';
   const cardStyle: React.CSSProperties = { height: 'clamp(360px, 85vh, 900px)' };
 
-  const cards = [
-    <div key="card1" className={cardClass} style={cardStyle} />,
-    <div key="card2" className={cardClass} style={cardStyle} />,
-    <div key="card3" className={cardClass} style={cardStyle} />,
-  ];
+  const cards = Array.from({ length: CARD_COUNT }).map((_, idx) => {
+    const screen = screens[idx] || {};
+    return (
+      <div key={`card${idx}`} className={cardClass + " flex flex-col overflow-hidden"} style={cardStyle}>
+        {screen.image && (
+          <div className="w-full h-[40%] md:h-[45%] flex-shrink-0 relative bg-slate-100">
+            <img src={screen.image} alt="" className="w-full h-full object-cover" draggable={false} />
+            <div className="absolute inset-0 bg-gradient-to-t from-black/40 to-transparent" />
+          </div>
+        )}
+        <div className={`p-6 md:p-8 flex-1 overflow-y-auto custom-scrollbar ${!screen.image ? 'pt-8 md:pt-12' : ''}`}>
+          {screen.text ? (
+            <p className="text-slate-600 text-lg md:text-xl leading-relaxed font-medium">
+              {screen.text}
+            </p>
+          ) : (
+            !screen.image && <div className="h-full flex items-center justify-center text-slate-300 italic">Pantalla vacía</div>
+          )}
+        </div>
+      </div>
+    );
+  });
 
   // Icono de flecha SVG
   const ChevronLeft = () => (
@@ -135,11 +156,11 @@ const PointInfoPanel: React.FC<{
       {/* Fondo difuminado */}
       <div className="absolute inset-0">
         <img
-          src={point.image}
+          src={point.image || screens[0]?.image || ''}
           alt=""
           draggable={false}
           className="w-full h-full object-cover scale-110"
-          style={{ filter: 'blur(32px)' }}
+          style={{ filter: 'blur(12px)' }}
         />
         <div className="absolute inset-0 bg-gradient-to-b from-black/55 via-black/60 to-black/80" />
       </div>
@@ -172,19 +193,22 @@ const PointInfoPanel: React.FC<{
 
         {/* Flecha izquierda — solo desktop */}
         <button
-          onClick={prev}
+          onClick={(e) => { e.stopPropagation(); prev(); }}
           disabled={activeCard === 0}
           aria-label="Anterior"
           className={`
             hidden md:flex
-            absolute left-6 z-20
+            absolute left-6
             w-11 h-11 rounded-full bg-white/20 hover:bg-white/40 backdrop-blur-sm
             items-center justify-center text-white
             transition-all duration-200
             ${activeCard === 0 ? 'opacity-25 cursor-not-allowed' : 'hover:scale-110 active:scale-95'}
           `}
+          style={{ zIndex: 9999, pointerEvents: activeCard === 0 ? 'none' : 'auto' }}
         >
-          <ChevronLeft />
+          <div className="pointer-events-none">
+            <ChevronLeft />
+          </div>
         </button>
 
         {/* Cards */}
@@ -202,19 +226,22 @@ const PointInfoPanel: React.FC<{
 
         {/* Flecha derecha — solo desktop */}
         <button
-          onClick={next}
+          onClick={(e) => { e.stopPropagation(); next(); }}
           disabled={activeCard === CARD_COUNT - 1}
           aria-label="Siguiente"
           className={`
             hidden md:flex
-            absolute right-6 z-20
+            absolute right-6
             w-11 h-11 rounded-full bg-white/20 hover:bg-white/40 backdrop-blur-sm
             items-center justify-center text-white
             transition-all duration-200
             ${activeCard === CARD_COUNT - 1 ? 'opacity-25 cursor-not-allowed' : 'hover:scale-110 active:scale-95'}
           `}
+          style={{ zIndex: 9999, pointerEvents: activeCard === CARD_COUNT - 1 ? 'none' : 'auto' }}
         >
-          <ChevronRight />
+          <div className="pointer-events-none">
+            <ChevronRight />
+          </div>
         </button>
       </div>
 
@@ -249,7 +276,7 @@ const MapSection: React.FC<MapSectionProps> = ({ activePoint, setActivePoint }) 
         maxBounds={doloresBounds}
         maxBoundsViscosity={1.0}
         style={{ height: '100%', width: '100%', zIndex: 10 }}
-        zoomControl={false}
+        zoomControl={true}
       >
         <TileLayer
           attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'

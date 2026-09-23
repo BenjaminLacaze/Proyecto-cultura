@@ -3,24 +3,75 @@
     "title": "Plaza Moreno",
     "category": "Plaza",
     "section": "plazas",
+    "image": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRpmaTsj0EWF1GUpp2bEcRmm8LyKRY2F3xmhZPF2Y8t7GztIYa6iw98Id4&s=10",
     "position": [
-      -36.31822,
-      -57.68558
+      -36.31819,
+      -57.68557
     ],
-    "description": "Plaza de la ciudad de dolores",
-    "image": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcR74KG1mvyjnzSqAMyveqvUkbDjVhsdWxORXjN3jDdZOSILlniFhzwrkEKI&s=10",
-    "id": 1
+    "screens": [
+      {
+        "image": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcR74KG1mvyjnzSqAMyveqvUkbDjVhsdWxORXjN3jDdZOSILlniFhzwrkEKI&s=10",
+        "text": "Glorieta: Estructura tradicional de la plaza, utilizada históricamente como espacio para actividades culturales y encuentros comunitarios. Su presencia le aporta un carácter histórico y distintivo al lugar."
+      },
+      {
+        "image": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSpyykel3rFApDfL8UntBL3GdR0m10y2WX1aal9xbD812iomgynEVhLqq8&s=10",
+        "text": "uegos infantiles: Sector destinado a los más chicos, con juegos recreativos y espacios pensados para el entretenimiento y la convivencia familiar."
+      },
+      {
+        "image": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSu89MwxMskNzfqjy0kaCYyNITmuYZ1IXGW5FYgHXgbOByEnMWTw0TOasep&s=10",
+        "text": "Campo de bochas: Espacio tradicional de la plaza destinado a la práctica de bochas, una actividad vinculada especialmente con el encuentro y la recreación de los vecinos."
+      },
+      {
+        "image": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcS8FG4_YT8ouQBdG0wsp6IqbSnMZkCIfVvnnWTtT0QaK1-46eiIf64WhTk&s=10",
+        "text": "Fuente: Elemento ornamental de la plaza que complementa el espacio verde y aporta un punto característico dentro de su paisaje."
+      }
+    ],
+    "id": 6
   },
   {
-    "title": "Parque Libres del Sur",
-    "category": "Plaza",
-    "section": "plazas",
+    "title": "Teatro Municipal Unione",
+    "category": "Teatro",
+    "section": "encuentro",
+    "image": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRKd_WIiGyGLha0N3uP8vIiah8xZiSmcDInhYeemOksFm11wYI9HTPYqyw3&s=10",
     "position": [
-      -36.32092,
-      -57.69361
+      -36.3172,
+      -57.67471
     ],
-    "description": "Parque de la ciudad",
-    "image": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcR74KG1mvyjnzSqAMyveqvUkbDjVhsdWxORXjN3jDdZOSILlniFhzwrkEKI&s=10",
-    "id": 2
+    "screens": [
+      {
+        "image": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTptHdIglrxZHj8qRUJnvDvn8T5mHBzbrSt-m5tXRQb7qG27FxQR8iZN8vh&s=10",
+        "text": "Teatro Unione: Es uno de los edificios culturales e históricos más importantes de Dolores. Su construcción comenzó en 1876, impulsada por la colectividad italiana, y se desarrolló durante varias décadas. De estilo lírico italiano, cuenta con platea, palcos, galería, paraíso y foso para orquesta. Se destaca por su excelente acústica y por albergar espectáculos de teatro, música, ópera y otras expresiones artísticas. Actualmente tiene capacidad para unas 450 personas y continúa siendo un importante espacio cultural de la ciudad"
+      },
+      {
+        "image": "https://dolores.gob.ar/wp-content/uploads/2015/02/TEATRO-UNIONE-4-1.jpg",
+        "text": "En 2026 cumplió 150 años y se realizaron trabajos de restauración y puesta en valor, incluyendo la renovación de su fachada."
+      }
+    ],
+    "id": 7
+  },
+  {
+    "title": "Secretaria de Cultura de La Ciudad de Dolores",
+    "category": "Sede",
+    "section": "interes",
+    "image": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTGxDWVsknfHqRxusEie9wJr0Sh7wii_aphdEqrrjDcZ5W1uWhok7dLbco&s=10",
+    "position": [
+      -36.31087,
+      -57.67856
+    ],
+    "screens": [
+      {
+        "image": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSoPJ8coQtTdMOZaAA5fdfPeFW0KEScfhPl7oYhK1R6zLCclO2seQPv9yQb&s=10",
+        "text": "La Secretaría de Cultura de la Municipalidad de Dolores es el área encargada de promover y acercar actividades culturales y artísticas a la comunidad. Su sede se encuentra en Mitre y 25 de Mayo, y ofrece propuestas para distintas edades y disciplinas."
+      },
+      {
+        "image": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTwI0lvH6K21u-Bkd4dzusF8BHTiY5xH3DfPL72tENyeA7gCRRlExOAbos&s=10",
+        "text": "Entre sus actividades se encuentran talleres de artes visuales, música, teatro, danza, cine, cerámica, literatura, idiomas y otras disciplinas artísticas. En 2025, por ejemplo, se desarrollaron 30 talleres durante el primer cuatrimestre, mientras que a lo largo de ese año la Secretaría realizó 22 talleres con más de 700 participantes."
+      },
+      {
+        "image": "",
+        "text": "🎨 Pintura y dibujo\n🏺 Cerámica\n🎭 Teatro para niños, adolescentes y adultos\n🎬 Cine para infancias\n🎵 Canto y coro de música popular\n💃 Danzas y folklore\n🎨 Fileteado porteño\n📚 Taller literario\n♟️ Ajedrez\n📷 Fotografía\n🧵 Costura\n🇬🇧 Inglés\n🎼 Filosofía y arte"
+      }
+    ],
+    "id": 8
   }
 ]

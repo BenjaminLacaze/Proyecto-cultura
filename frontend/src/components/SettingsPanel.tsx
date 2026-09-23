@@ -35,7 +35,7 @@ const SettingsPanel: React.FC = () => {
   }, [open]);
 
   return (
-    <div ref={panelRef} className="fixed bottom-6 right-6 z-[200] flex flex-col items-end gap-3">
+    <div ref={panelRef} className="fixed bottom-6 right-6 z-[200] flex flex-col items-end gap-3 pointer-events-none">
 
       {/* ── Panel ── */}
       <div
@@ -117,7 +117,7 @@ const SettingsPanel: React.FC = () => {
           w-14 h-14 rounded-full bg-orange-500 text-white shadow-lg
           flex items-center justify-center
           hover:bg-orange-600 active:scale-95
-          transition-all duration-300
+          transition-all duration-300 pointer-events-auto
           ${open ? 'shadow-orange-300 ring-4 ring-orange-200' : ''}
         `}
       >
