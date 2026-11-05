@@ -50,28 +50,45 @@
     "id": 7
   },
   {
-    "title": "Secretaria de Cultura de La Ciudad de Dolores",
-    "category": "Sede",
-    "section": "interes",
-    "image": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTGxDWVsknfHqRxusEie9wJr0Sh7wii_aphdEqrrjDcZ5W1uWhok7dLbco&s=10",
+    "title": "Plaza Castelli",
+    "category": "Plaza",
+    "section": "plazas",
+    "image": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcS2E1ven-B7zLjzmI3t3l9w_iL4ZebG0CYvQU-qHGYoPg&s=10",
     "position": [
-      -36.31087,
-      -57.67856
+      -36.31536,
+      -57.67556
     ],
     "screens": [
       {
-        "image": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSoPJ8coQtTdMOZaAA5fdfPeFW0KEScfhPl7oYhK1R6zLCclO2seQPv9yQb&s=10",
-        "text": "La Secretaría de Cultura de la Municipalidad de Dolores es el área encargada de promover y acercar actividades culturales y artísticas a la comunidad. Su sede se encuentra en Mitre y 25 de Mayo, y ofrece propuestas para distintas edades y disciplinas."
-      },
-      {
-        "image": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTwI0lvH6K21u-Bkd4dzusF8BHTiY5xH3DfPL72tENyeA7gCRRlExOAbos&s=10",
-        "text": "Entre sus actividades se encuentran talleres de artes visuales, música, teatro, danza, cine, cerámica, literatura, idiomas y otras disciplinas artísticas. En 2025, por ejemplo, se desarrollaron 30 talleres durante el primer cuatrimestre, mientras que a lo largo de ese año la Secretaría realizó 22 talleres con más de 700 participantes."
+        "image": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcS2E1ven-B7zLjzmI3t3l9w_iL4ZebG0CYvQU-qHGYoPg&s=10",
+        "text": "Plaza principal"
       },
       {
         "image": "",
-        "text": "🎨 Pintura y dibujo\n🏺 Cerámica\n🎭 Teatro para niños, adolescentes y adultos\n🎬 Cine para infancias\n🎵 Canto y coro de música popular\n💃 Danzas y folklore\n🎨 Fileteado porteño\n📚 Taller literario\n♟️ Ajedrez\n📷 Fotografía\n🧵 Costura\n🇬🇧 Inglés\n🎼 Filosofía y arte"
+        "text": ""
+      },
+      {
+        "image": "",
+        "text": ""
       }
     ],
-    "id": 8
+    "id": 9
+  },
+  {
+    "title": "comisaria",
+    "category": "comizaria",
+    "section": "interes",
+    "image": "",
+    "position": [
+      -36.31367,
+      -57.68005
+    ],
+    "screens": [
+      {
+        "image": "",
+        "text": "policia"
+      }
+    ],
+    "id": 10
   }
 ]

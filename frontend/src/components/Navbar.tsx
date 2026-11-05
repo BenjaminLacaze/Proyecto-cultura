@@ -141,17 +141,17 @@ const Navbar: React.FC<NavbarProps> = ({ onPointSelect, onShowContact, onShowAge
       {/* ── MOBILE: dropdown ── */}
       <div
         className={`md:hidden overflow-hidden transition-all duration-300 ease-in-out ${
-          menuOpen ? 'max-h-[600px] opacity-100' : 'max-h-0 opacity-0'
+          menuOpen ? 'max-h-[calc(100svh-56px)] opacity-100 overflow-y-auto' : 'max-h-0 opacity-0 pointer-events-none'
         }`}
       >
         <div className="px-3 pb-4 border-t border-orange-100 pt-3 flex flex-col gap-1 bg-white">
           {/* Nav links */}
-          <a href="#" className="flex items-center gap-2 text-orange-500 font-semibold hover:bg-orange-50 px-3 py-2 rounded-md text-sm" onClick={() => setMenuOpen(false)}>
+          <button type="button" className="flex items-center gap-2 text-left text-orange-500 font-semibold hover:bg-orange-50 active:bg-orange-100 px-3 py-3 rounded-md text-sm" onClick={() => { onShowAgenda(); setMenuOpen(false); }}>
             <span className="font-bold text-base leading-none">›</span> Agenda
-          </a>
-          <a href="#" className="flex items-center gap-2 text-amber-500 font-semibold hover:bg-amber-50 px-3 py-2 rounded-md text-sm" onClick={() => setMenuOpen(false)}>
+          </button>
+          <button type="button" className="flex items-center gap-2 text-left text-amber-500 font-semibold hover:bg-amber-50 active:bg-amber-100 px-3 py-3 rounded-md text-sm" onClick={() => { onShowContact(); setMenuOpen(false); }}>
             <span className="font-bold text-base leading-none">›</span> Contacto
-          </a>
+          </button>
 
           {/* Divisor */}
           <div className="my-2 h-px bg-slate-100" />

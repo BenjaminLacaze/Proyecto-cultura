@@ -5,10 +5,36 @@ const path = require('path');
 
 const app = express();
 app.use(cors());
-app.use(express.json());
+app.use(express.json({ limit: '25mb' }));
 app.use(express.static(path.join(__dirname, 'public')));
 
 const pointsFilePath = path.join(__dirname, '..', 'frontend', 'src', 'data', 'points.json');
+const uploadsDir = path.join(__dirname, '..', 'frontend', 'public', 'uploads');
+
+// Servir las imágenes subidas también desde el admin (para previsualizar)
+app.use('/uploads', express.static(uploadsDir));
+
+// POST para subir una foto desde la computadora (base64)
+app.post('/api/upload', (req, res) => {
+    const { filename, data } = req.body || {};
+    const match = /^data:(image\/(png|jpe?g|gif|webp|avif));base64,(.+)$/.exec(data || '');
+    if (!match) return res.status(400).json({ error: 'Formato de imagen no válido' });
+
+    const ext = match[2] === 'jpeg' ? 'jpg' : match[2];
+    const base = path.parse(filename || 'foto').name
+        .normalize('NFD').replace(/[\u0300-\u036f]/g, '')
+        .replace(/[^a-zA-Z0-9_-]/g, '-').slice(0, 40) || 'foto';
+    const finalName = `${Date.now()}-${base}.${ext}`;
+
+    fs.mkdirSync(uploadsDir, { recursive: true });
+    fs.writeFile(path.join(uploadsDir, finalName), Buffer.from(match[3], 'base64'), (err) => {
+        if (err) {
+            console.error('Error guardando imagen', err);
+            return res.status(500).json({ error: 'No se pudo guardar la imagen' });
+        }
+        res.json({ url: `/uploads/${finalName}` });
+    });
+});
 
 // GET all points
 app.get('/api/points', (req, res) => {
