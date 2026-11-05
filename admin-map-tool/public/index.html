@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Administrador de Puntos - Proyecto Vero</title>
+    <meta name="robots" content="noindex, nofollow">
     <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
     <!-- Leaflet CSS -->
@@ -11,16 +12,38 @@
 </head>
 <body class="bg-slate-100 h-screen flex flex-col md:flex-row overflow-hidden font-sans">
 
+    <!-- Pantalla de acceso -->
+    <div id="loginOverlay" class="hidden fixed inset-0 z-[2000] bg-gradient-to-br from-orange-500 via-orange-600 to-rose-600 flex items-center justify-center p-6">
+        <form id="loginForm" class="w-full max-w-sm bg-white rounded-2xl shadow-2xl p-8 space-y-4">
+            <div>
+                <h2 class="text-2xl font-bold text-slate-800">Admin de Puntos</h2>
+                <p class="text-slate-500 text-sm mt-1">Ingresá la contraseña para administrar el mapa.</p>
+            </div>
+            <input type="password" id="loginPassword" required autocomplete="current-password" class="w-full border border-slate-300 rounded-lg px-3 py-2.5 text-sm focus:ring-2 focus:ring-orange-500 focus:border-orange-500 outline-none" placeholder="Contraseña">
+            <p id="loginError" class="hidden text-sm text-red-600 font-medium"></p>
+            <button type="submit" id="loginBtn" class="w-full bg-orange-500 hover:bg-orange-600 text-white font-bold py-3 rounded-xl shadow-lg shadow-orange-200 transition-all active:scale-95">Entrar</button>
+        </form>
+    </div>
+
     <!-- Sidebar: Formulario -->
-    <div class="w-full md:w-1/3 lg:w-1/4 bg-white shadow-xl flex flex-col h-full z-10">
+    <div class="w-full md:w-1/3 lg:w-1/4 bg-white shadow-xl flex flex-col h-1/2 md:h-full z-10">
         <div class="p-6 border-b border-slate-100">
-            <h1 class="text-2xl font-bold text-slate-800">Admin de Puntos</h1>
-            <p class="text-slate-500 text-sm mt-1">Arrastrá el pin rojo en el mapa para establecer la ubicación.</p>
+            <div class="flex items-center justify-between gap-2">
+                <h1 class="text-2xl font-bold text-slate-800">Admin de Puntos</h1>
+                <button type="button" id="logoutBtn" class="hidden text-xs text-slate-400 hover:text-slate-700 font-semibold">Salir</button>
+            </div>
+            <p class="text-slate-500 text-sm mt-1">Arrastrá el pin rojo (o hacé clic en el mapa) para establecer la ubicación.</p>
+            <div id="modeBadge" class="hidden mt-3 text-xs font-semibold px-3 py-2 rounded-lg"></div>
         </div>
 
         <div class="p-6 flex-1 overflow-y-auto">
             <form id="pointForm" class="space-y-4">
-                
+
+                <div id="editBanner" class="hidden bg-sky-50 border border-sky-200 text-sky-800 text-sm rounded-lg px-3 py-2 flex items-center justify-between gap-2">
+                    <span>Editando: <b id="editTitle"></b></span>
+                    <button type="button" id="cancelEditBtn" class="text-xs font-bold text-sky-700 hover:text-sky-900 underline">Cancelar</button>
+                </div>
+
                 <div>
                     <label class="block text-sm font-semibold text-slate-700 mb-1">Coordenadas</label>
                     <div class="flex gap-2">
@@ -71,50 +94,109 @@
                 </div>
 
                 <div class="pt-4">
-                    <button type="submit" id="submitBtn" class="w-full bg-orange-500 hover:bg-orange-600 text-white font-bold py-3 px-4 rounded-xl shadow-lg shadow-orange-200 transition-all active:scale-95">
+                    <button type="submit" id="submitBtn" class="w-full bg-orange-500 hover:bg-orange-600 text-white font-bold py-3 px-4 rounded-xl shadow-lg shadow-orange-200 transition-all active:scale-95 disabled:opacity-60">
                         Guardar Punto
                     </button>
                 </div>
-                
+
                 <div id="status" class="hidden p-3 rounded-lg text-sm text-center font-medium mt-2"></div>
             </form>
         </div>
     </div>
 
     <!-- Mapa -->
-    <div id="map" class="flex-1 h-full z-0"></div>
+    <div id="map" class="flex-1 h-1/2 md:h-full z-0"></div>
 
     <!-- Leaflet JS -->
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
     <script>
-        // Inicializar mapa centrado en Dolores
+        // ================== Configuración / sesión ==================
+        let config = { mode: 'local', authRequired: false, assetBase: '' };
+        const PW_KEY = 'adminPassword';
+        const getPassword = () => sessionStorage.getItem(PW_KEY) || '';
+
+        // Llamada a la API con contraseña y manejo de errores legible
+        async function api(url, options = {}) {
+            const res = await fetch(url, {
+                ...options,
+                headers: {
+                    ...(options.body ? { 'Content-Type': 'application/json' } : {}),
+                    'x-admin-password': getPassword(),
+                    ...(options.headers || {}),
+                },
+            });
+            const ct = res.headers.get('content-type') || '';
+            if (!ct.includes('application/json')) {
+                throw new Error(res.status === 413
+                    ? 'el archivo es demasiado grande.'
+                    : 'el servidor del admin está desactualizado. Reinicialo con "node server.js".');
+            }
+            const data = await res.json();
+            if (res.status === 401 && !url.endsWith('/api/login')) {
+                showLogin('La sesión expiró. Ingresá la contraseña de nuevo.');
+            }
+            if (!res.ok) throw new Error(data.error || `Error ${res.status}`);
+            return data;
+        }
+
+        // Las fotos subidas se guardan como "/uploads/...": en el admin publicado se previsualizan desde GitHub
+        const resolveAsset = (url) => (url && url.startsWith('/uploads/') ? config.assetBase + url : url);
+
+        const escapeHtml = (s) => String(s ?? '').replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+
+        // ================== Login ==================
+        const loginOverlay = document.getElementById('loginOverlay');
+        const loginError = document.getElementById('loginError');
+        const logoutBtn = document.getElementById('logoutBtn');
+
+        function showLogin(msg) {
+            sessionStorage.removeItem(PW_KEY);
+            loginError.textContent = msg || '';
+            loginError.classList.toggle('hidden', !msg);
+            loginOverlay.classList.remove('hidden');
+            setTimeout(() => document.getElementById('loginPassword').focus(), 50);
+        }
+
+        document.getElementById('loginForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const btn = document.getElementById('loginBtn');
+            const pw = document.getElementById('loginPassword').value;
+            btn.disabled = true; btn.textContent = 'Verificando...';
+            try {
+                sessionStorage.setItem(PW_KEY, pw);
+                await api('/api/login', { method: 'POST' });
+                loginOverlay.classList.add('hidden');
+                document.getElementById('loginPassword').value = '';
+                loadExistingPoints();
+            } catch (err) {
+                sessionStorage.removeItem(PW_KEY);
+                loginError.textContent = err.message;
+                loginError.classList.remove('hidden');
+            } finally {
+                btn.disabled = false; btn.textContent = 'Entrar';
+            }
+        });
+
+        logoutBtn.addEventListener('click', () => showLogin());
+
+        // ================== Mapa ==================
         const map = L.map('map').setView([-36.3132, -57.6792], 15);
-        
+
         L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
             attribution: '&copy; OpenStreetMap contributors'
         }).addTo(map);
 
-        // Icono para puntos existentes (Azul estándar)
-        const blueIcon = new L.Icon({
-            iconUrl: 'https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-2x-blue.png',
+        const makeIcon = (color) => new L.Icon({
+            iconUrl: `https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-2x-${color}.png`,
             shadowUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/0.7.7/images/marker-shadow.png',
             iconSize: [25, 41],
             iconAnchor: [12, 41],
             popupAnchor: [1, -34],
             shadowSize: [41, 41]
         });
+        const blueIcon = makeIcon('blue');   // puntos existentes
+        const redIcon = makeIcon('red');     // punto que se está creando/editando
 
-        // Icono para el NUEVO punto a agregar (Rojo arrastrable)
-        const redIcon = new L.Icon({
-            iconUrl: 'https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-2x-red.png',
-            shadowUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/0.7.7/images/marker-shadow.png',
-            iconSize: [25, 41],
-            iconAnchor: [12, 41],
-            popupAnchor: [1, -34],
-            shadowSize: [41, 41]
-        });
-
-        // Marcador draggable
         const newMarker = L.marker([-36.3132, -57.6792], {
             icon: redIcon,
             draggable: true,
@@ -122,145 +204,193 @@
         }).addTo(map);
         newMarker.bindPopup("<b>¡Arrastrame!</b><br>Ubicá el nuevo punto.").openPopup();
 
-        // Actualizar inputs al arrastrar
         const latInput = document.getElementById('lat');
         const lngInput = document.getElementById('lng');
-        
+
         function updateInputs(latlng) {
             latInput.value = latlng.lat.toFixed(5);
             lngInput.value = latlng.lng.toFixed(5);
         }
-        
-        // Inicializar inputs
         updateInputs(newMarker.getLatLng());
 
-        newMarker.on('dragend', function(e) {
-            updateInputs(newMarker.getLatLng());
-        });
+        newMarker.on('dragend', () => updateInputs(newMarker.getLatLng()));
+        map.on('click', (e) => { newMarker.setLatLng(e.latlng); updateInputs(e.latlng); });
 
-        // Store markers to remove them later
+        // ================== Puntos existentes ==================
         const pointMarkers = {};
+        const pointsById = {};
 
-        // Cargar puntos existentes
-        function loadExistingPoints() {
-            // Limpiar marcadores existentes primero si es necesario, pero como cargamos al inicio está bien
-            fetch('/api/points')
-                .then(res => res.json())
-                .then(points => {
-                    points.forEach(point => {
-                        const marker = L.marker(point.position, { icon: blueIcon })
-                            .addTo(map)
-                            .bindPopup(`
-                                <b>${point.title}</b><br>${point.category} - ${point.section}
-                                <br>
-                                <button onclick="deletePoint(${point.id})" class="mt-2 text-xs bg-red-100 text-red-600 px-2 py-1 rounded hover:bg-red-200 font-bold transition-colors">Eliminar Punto</button>
-                            `);
-                        pointMarkers[point.id] = marker;
-                    });
-                })
-                .catch(err => console.error("Error cargando puntos:", err));
+        function popupHtml(point) {
+            return `
+                <b>${escapeHtml(point.title)}</b><br>${escapeHtml(point.category)} - ${escapeHtml(point.section)}
+                <div class="flex gap-2 mt-2">
+                    <button onclick="editPoint(${point.id})" class="text-xs bg-sky-100 text-sky-700 px-2 py-1 rounded hover:bg-sky-200 font-bold transition-colors">Editar</button>
+                    <button onclick="deletePoint(${point.id})" class="text-xs bg-red-100 text-red-600 px-2 py-1 rounded hover:bg-red-200 font-bold transition-colors">Eliminar</button>
+                </div>`;
         }
-        
-        // Función global para eliminar
-        window.deletePoint = function(id) {
+
+        function upsertMarker(point) {
+            pointsById[point.id] = point;
+            if (pointMarkers[point.id]) map.removeLayer(pointMarkers[point.id]);
+            pointMarkers[point.id] = L.marker(point.position, { icon: blueIcon }).addTo(map).bindPopup(popupHtml(point));
+        }
+
+        function removeMarker(id) {
+            if (pointMarkers[id]) map.removeLayer(pointMarkers[id]);
+            delete pointMarkers[id];
+            delete pointsById[id];
+        }
+
+        async function loadExistingPoints() {
+            Object.keys(pointMarkers).forEach(removeMarker);
+            try {
+                const points = await api('/api/points');
+                points.forEach(upsertMarker);
+            } catch (err) {
+                console.error('Error cargando puntos:', err);
+            }
+        }
+
+        // ================== Mensajes ==================
+        const statusDiv = document.getElementById('status');
+        let statusTimer;
+        function showStatus(text, kind = 'ok', ms = 6000) {
+            const styles = {
+                ok: 'bg-emerald-100 text-emerald-700',
+                warn: 'bg-yellow-100 text-yellow-700',
+                error: 'bg-red-100 text-red-700',
+            };
+            statusDiv.innerText = text;
+            statusDiv.className = `p-3 rounded-lg text-sm text-center font-medium mt-4 block ${styles[kind]}`;
+            clearTimeout(statusTimer);
+            if (ms) statusTimer = setTimeout(() => { statusDiv.className = 'hidden'; }, ms);
+        }
+        const publishNote = () => (config.mode === 'remote'
+            ? ' El mapa publicado se actualizará en 1–2 minutos.'
+            : ' Ya podés verlo en la app local.');
+
+        // ================== Eliminar ==================
+        window.deletePoint = async function (id) {
             if (!confirm('¿Estás seguro de eliminar este punto?')) return;
-            
-            fetch(`/api/points/${id}`, { method: 'DELETE' })
-                .then(res => res.json())
-                .then(res => {
-                    if (pointMarkers[id]) {
-                        map.removeLayer(pointMarkers[id]);
-                        delete pointMarkers[id];
-                    }
-                    const statusDiv = document.getElementById('status');
-                    statusDiv.innerText = 'Punto eliminado';
-                    statusDiv.className = 'p-3 rounded-lg text-sm text-center font-medium mt-4 bg-yellow-100 text-yellow-700 block';
-                    setTimeout(() => { statusDiv.className = 'hidden'; }, 3000);
-                })
-                .catch(err => alert('Error eliminando punto'));
+            try {
+                await api(`/api/points/${id}`, { method: 'DELETE' });
+                removeMarker(id);
+                if (editingId === id) resetForm();
+                showStatus('Punto eliminado.' + publishNote(), 'warn');
+            } catch (err) {
+                showStatus('Error eliminando punto: ' + err.message, 'error');
+            }
         };
 
-        loadExistingPoints();
-
-        // Manejar el submit del form
+        // ================== Editar ==================
+        let editingId = null;
         const form = document.getElementById('pointForm');
-        const statusDiv = document.getElementById('status');
         const submitBtn = document.getElementById('submitBtn');
+        const editBanner = document.getElementById('editBanner');
 
-        form.addEventListener('submit', (e) => {
+        function setPreview(field, url) {
+            const preview = field.querySelector('.image-preview');
+            if (url) { preview.src = resolveAsset(url); preview.classList.remove('hidden'); }
+            else preview.classList.add('hidden');
+        }
+
+        window.editPoint = function (id) {
+            const point = pointsById[id];
+            if (!point) return;
+            editingId = id;
+            map.closePopup();
+
+            document.getElementById('title').value = point.title || '';
+            document.getElementById('category').value = point.category || '';
+            document.getElementById('section').value = point.section || 'encuentro';
+            const imageInput = document.getElementById('image');
+            imageInput.value = point.image || '';
+            setPreview(imageInput.closest('.image-field'), point.image);
+
+            screensContainer.innerHTML = '';
+            const screens = point.screens && point.screens.length ? point.screens : [{}];
+            screens.forEach((s) => addScreen(s));
+
+            newMarker.setLatLng(point.position);
+            updateInputs(newMarker.getLatLng());
+            map.panTo(point.position);
+
+            document.getElementById('editTitle').textContent = point.title;
+            editBanner.classList.remove('hidden');
+            submitBtn.innerText = 'Guardar cambios';
+            form.closest('.overflow-y-auto').scrollTop = 0;
+        };
+
+        function resetForm() {
+            editingId = null;
+            form.reset();
+            updateInputs(newMarker.getLatLng());
+            screensContainer.innerHTML = '';
+            document.querySelectorAll('.image-preview').forEach((i) => i.classList.add('hidden'));
+            addScreen();
+            editBanner.classList.add('hidden');
+            submitBtn.innerText = 'Guardar Punto';
+        }
+
+        document.getElementById('cancelEditBtn').addEventListener('click', resetForm);
+
+        // ================== Guardar (crear / editar) ==================
+        form.addEventListener('submit', async (e) => {
             e.preventDefault();
-            
-            const screens = Array.from(document.querySelectorAll('.screen-item')).map(screenDiv => {
-                return {
-                    image: screenDiv.querySelector('.screen-image').value,
-                    text: screenDiv.querySelector('.screen-text').value
-                };
-            });
 
-            const newPointData = {
+            if (document.querySelector('.image-url[data-uploading="1"]')) {
+                showStatus('Esperá a que termine de subirse la foto.', 'warn', 3000);
+                return;
+            }
+
+            const screens = Array.from(document.querySelectorAll('.screen-item')).map((screenDiv) => ({
+                image: screenDiv.querySelector('.screen-image').value,
+                text: screenDiv.querySelector('.screen-text').value
+            }));
+
+            const pointData = {
                 title: document.getElementById('title').value,
                 category: document.getElementById('category').value,
                 section: document.getElementById('section').value,
                 image: document.getElementById('image').value,
-                position: [ parseFloat(latInput.value), parseFloat(lngInput.value) ],
-                screens: screens
+                position: [parseFloat(latInput.value), parseFloat(lngInput.value)],
+                screens
             };
 
+            const wasEditing = editingId !== null;
             submitBtn.disabled = true;
             submitBtn.innerText = 'Guardando...';
 
-            fetch('/api/points', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify(newPointData)
-            })
-            .then(res => res.json())
-            .then(res => {
-                statusDiv.innerText = '¡Punto agregado correctamente! Ya podés verlo en la app.';
-                statusDiv.className = 'p-3 rounded-lg text-sm text-center font-medium mt-4 bg-emerald-100 text-emerald-700 block';
-                
-                // Limpiar form
-                form.reset();
-                // Restaurar inputs coords
-                updateInputs(newMarker.getLatLng());
-                // Resetear pantallas a 1 sola
-                document.getElementById('screensContainer').innerHTML = '';
-                document.querySelectorAll('.image-preview').forEach(i => i.classList.add('hidden'));
-                addScreen();
-
-                // Agregar el marcador recien creado al mapa
-                const marker = L.marker(newPointData.position, { icon: blueIcon })
-                    .addTo(map)
-                    .bindPopup(`
-                        <b>${newPointData.title}</b><br>${newPointData.category} - ${newPointData.section}
-                        <br>
-                        <button onclick="deletePoint(${res.point.id})" class="mt-2 text-xs bg-red-100 text-red-600 px-2 py-1 rounded hover:bg-red-200 font-bold transition-colors">Eliminar Punto</button>
-                    `);
-                pointMarkers[res.point.id] = marker;
-                    
-                setTimeout(() => { statusDiv.className = 'hidden'; }, 5000);
-            })
-            .catch(err => {
-                statusDiv.innerText = 'Error al guardar el punto.';
-                statusDiv.className = 'p-3 rounded-lg text-sm text-center font-medium mt-4 bg-red-100 text-red-700 block';
-            })
-            .finally(() => {
+            try {
+                const res = wasEditing
+                    ? await api(`/api/points/${editingId}`, { method: 'PUT', body: JSON.stringify(pointData) })
+                    : await api('/api/points', { method: 'POST', body: JSON.stringify(pointData) });
+                upsertMarker(res.point);
+                resetForm();
+                showStatus((wasEditing ? '¡Cambios guardados!' : '¡Punto agregado!') + publishNote(), 'ok', 8000);
+            } catch (err) {
+                showStatus('Error al guardar el punto: ' + err.message, 'error', 0);
+                submitBtn.innerText = wasEditing ? 'Guardar cambios' : 'Guardar Punto';
+            } finally {
                 submitBtn.disabled = false;
-                submitBtn.innerText = 'Guardar Punto';
-            });
+            }
         });
-        // Lógica de pantallas dinámicas
-        const screensContainer = document.getElementById('screensContainer');
-        const addScreenBtn = document.getElementById('addScreenBtn');
 
-        function addScreen() {
+        // ================== Pantallas dinámicas ==================
+        const screensContainer = document.getElementById('screensContainer');
+
+        function renumberScreens() {
+            screensContainer.querySelectorAll('.screen-number').forEach((el, i) => { el.textContent = `Pantalla ${i + 1}`; });
+        }
+
+        function addScreen(data = {}) {
             const index = screensContainer.children.length + 1;
             const div = document.createElement('div');
             div.className = 'screen-item bg-slate-50 p-3 rounded-lg border border-slate-200 relative';
             div.innerHTML = `
                 <div class="flex justify-between items-center mb-2">
-                    <span class="text-xs font-bold text-slate-500 uppercase">Pantalla ${index}</span>
-                    ${index > 1 ? `<button type="button" class="text-xs text-red-500 hover:text-red-700 font-bold" onclick="this.parentElement.parentElement.remove()">Quitar</button>` : ''}
+                    <span class="screen-number text-xs font-bold text-slate-500 uppercase">Pantalla ${index}</span>
+                    ${index > 1 ? `<button type="button" class="remove-screen text-xs text-red-500 hover:text-red-700 font-bold">Quitar</button>` : ''}
                 </div>
                 <div class="image-field mb-2">
                     <div class="flex gap-2">
@@ -274,62 +404,107 @@
                 </div>
                 <textarea rows="2" class="screen-text w-full border border-slate-300 rounded px-2 py-1.5 text-xs focus:ring-1 focus:ring-orange-500 outline-none" placeholder="Texto de esta pantalla (opcional)"></textarea>
             `;
+            div.querySelector('.screen-image').value = data.image || '';
+            div.querySelector('.screen-text').value = data.text || '';
+            const removeBtn = div.querySelector('.remove-screen');
+            if (removeBtn) removeBtn.addEventListener('click', () => { div.remove(); renumberScreens(); });
             screensContainer.appendChild(div);
+            setPreview(div.querySelector('.image-field'), data.image);
         }
 
-        addScreenBtn.addEventListener('click', addScreen);
-        
-        // Inicializar con 1 pantalla
+        document.getElementById('addScreenBtn').addEventListener('click', () => addScreen());
         addScreen();
 
-        // Subida de fotos desde la computadora (delegación de eventos)
-        document.addEventListener('change', (e) => {
+        // ================== Subida de fotos ==================
+        // Achica la foto antes de subirla (máx. 1600 px, JPG). Vercel no acepta envíos > ~4,5 MB
+        // y además el mapa carga más rápido.
+        function readAsDataURL(file) {
+            return new Promise((resolve, reject) => {
+                const r = new FileReader();
+                r.onload = () => resolve(r.result);
+                r.onerror = reject;
+                r.readAsDataURL(file);
+            });
+        }
+
+        async function prepareImage(file) {
+            const original = await readAsDataURL(file);
+            if (file.type === 'image/gif') return original; // no romper animaciones
+            const img = await new Promise((resolve, reject) => {
+                const i = new Image();
+                i.onload = () => resolve(i);
+                i.onerror = () => reject(new Error('no se pudo leer la imagen.'));
+                i.src = original;
+            });
+            const MAX = 1600;
+            const scale = Math.min(1, MAX / Math.max(img.width, img.height));
+            const canvas = document.createElement('canvas');
+            canvas.width = Math.round(img.width * scale);
+            canvas.height = Math.round(img.height * scale);
+            const ctx = canvas.getContext('2d');
+            ctx.fillStyle = '#fff';
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+            ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+            const resized = canvas.toDataURL('image/jpeg', 0.85);
+            return resized.length < original.length || scale < 1 ? resized : original;
+        }
+
+        document.addEventListener('change', async (e) => {
             if (!e.target.classList.contains('image-file')) return;
             const file = e.target.files[0];
+            e.target.value = '';
             if (!file) return;
             const field = e.target.closest('.image-field');
             const urlInput = field.querySelector('.image-url');
             const preview = field.querySelector('.image-preview');
+            const previous = urlInput.value;
 
-            const reader = new FileReader();
-            reader.onload = () => {
-                urlInput.value = 'Subiendo...';
-                fetch('/api/upload', {
+            urlInput.value = 'Subiendo...';
+            urlInput.dataset.uploading = '1';
+            try {
+                const data = await prepareImage(file);
+                preview.src = data; // vista previa inmediata
+                preview.classList.remove('hidden');
+                const res = await api('/api/upload', {
                     method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ filename: file.name, data: reader.result })
-                })
-                .then(async res => {
-                    const ct = res.headers.get('content-type') || '';
-                    if (!ct.includes('application/json')) {
-                        throw new Error('el servidor del admin está desactualizado. Reinicialo con "node server.js".');
-                    }
-                    return res.json();
-                })
-                .then(res => {
-                    if (!res.url) throw new Error(res.error);
-                    urlInput.value = res.url;
-                    preview.src = res.url;
-                    preview.classList.remove('hidden');
-                })
-                .catch(err => {
-                    urlInput.value = '';
-                    alert('Error subiendo la foto: ' + (err.message || ''));
+                    body: JSON.stringify({ filename: file.name, data })
                 });
-            };
-            reader.readAsDataURL(file);
-            e.target.value = '';
+                urlInput.value = res.url;
+            } catch (err) {
+                urlInput.value = previous;
+                setPreview(field, previous);
+                alert('Error subiendo la foto: ' + (err.message || ''));
+            } finally {
+                delete urlInput.dataset.uploading;
+            }
         });
 
         // Previsualizar también cuando se pega una URL
         document.addEventListener('input', (e) => {
             if (!e.target.classList.contains('image-url')) return;
-            const preview = e.target.closest('.image-field').querySelector('.image-preview');
-            const v = e.target.value.trim();
-            if (v) { preview.src = v; preview.classList.remove('hidden'); }
-            else preview.classList.add('hidden');
+            setPreview(e.target.closest('.image-field'), e.target.value.trim());
         });
 
+        // ================== Inicio ==================
+        (async function init() {
+            try {
+                config = await api('/api/config');
+            } catch (err) {
+                console.warn('No se pudo leer /api/config, se asume modo local:', err);
+            }
+            const badge = document.getElementById('modeBadge');
+            badge.classList.remove('hidden');
+            if (config.mode === 'remote') {
+                badge.className = 'mt-3 text-xs font-semibold px-3 py-2 rounded-lg bg-emerald-50 text-emerald-700 border border-emerald-200';
+                badge.textContent = '🌐 Modo publicado: los cambios se suben solos al mapa (tardan 1–2 min).';
+            } else {
+                badge.className = 'mt-3 text-xs font-semibold px-3 py-2 rounded-lg bg-slate-50 text-slate-600 border border-slate-200';
+                badge.textContent = '💻 Modo local: los cambios se guardan en esta computadora.';
+            }
+            if (config.authRequired) logoutBtn.classList.remove('hidden');
+            if (config.authRequired && !getPassword()) showLogin();
+            else loadExistingPoints();
+        })();
     </script>
 </body>
 </html>
