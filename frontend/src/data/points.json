@@ -90,5 +90,26 @@
       }
     ],
     "id": 10
+  },
+  {
+    "title": "parque",
+    "category": "plaza",
+    "section": "plazas",
+    "image": "",
+    "position": [
+      -36.32142,
+      -57.69325
+    ],
+    "screens": [
+      {
+        "image": "",
+        "text": "texto1"
+      },
+      {
+        "image": "",
+        "text": "texto 2"
+      }
+    ],
+    "id": 11
   }
 ]
