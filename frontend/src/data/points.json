@@ -90,22 +90,5 @@
       }
     ],
     "id": 10
-  },
-  {
-    "title": "aaa",
-    "category": "Plaza",
-    "section": "plazas",
-    "image": "/uploads/1793891028880-cultura-logo-DH1AsKFP.jpg",
-    "position": [
-      -36.32164,
-      -57.6929
-    ],
-    "screens": [
-      {
-        "image": "/uploads/1793891037521-imagen1.png",
-        "text": "aaaa"
-      }
-    ],
-    "id": 11
   }
 ]
