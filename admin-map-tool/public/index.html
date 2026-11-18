@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Administrador de Puntos - Proyecto Vero</title>
+    <title>Administrador Cultural - Proyecto Vero</title>
     <meta name="robots" content="noindex, nofollow">
     <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
@@ -16,8 +16,8 @@
     <div id="loginOverlay" class="hidden fixed inset-0 z-[2000] bg-gradient-to-br from-orange-500 via-orange-600 to-rose-600 flex items-center justify-center p-6">
         <form id="loginForm" class="w-full max-w-sm bg-white rounded-2xl shadow-2xl p-8 space-y-4">
             <div>
-                <h2 class="text-2xl font-bold text-slate-800">Admin de Puntos</h2>
-                <p class="text-slate-500 text-sm mt-1">Ingresá la contraseña para administrar el mapa.</p>
+                <h2 class="text-2xl font-bold text-slate-800">Panel Cultural</h2>
+                <p class="text-slate-500 text-sm mt-1">Ingresá la contraseña para administrar el mapa y la web.</p>
             </div>
             <input type="password" id="loginPassword" required autocomplete="current-password" class="w-full border border-slate-300 rounded-lg px-3 py-2.5 text-sm focus:ring-2 focus:ring-orange-500 focus:border-orange-500 outline-none" placeholder="Contraseña">
             <p id="loginError" class="hidden text-sm text-red-600 font-medium"></p>
@@ -25,82 +25,196 @@
         </form>
     </div>
 
-    <!-- Sidebar: Formulario -->
-    <div class="w-full md:w-1/3 lg:w-1/4 bg-white shadow-xl flex flex-col h-1/2 md:h-full z-10">
-        <div class="p-6 border-b border-slate-100">
-            <div class="flex items-center justify-between gap-2">
-                <h1 class="text-2xl font-bold text-slate-800">Admin de Puntos</h1>
+    <!-- Sidebar con Pestañas -->
+    <div id="sidebar" class="w-full md:w-5/12 lg:w-4/12 bg-white shadow-xl flex flex-col h-1/2 md:h-full z-10">
+        
+        <!-- Encabezado y Selector de Pestañas -->
+        <div class="p-4 border-b border-slate-100 flex-shrink-0">
+            <div class="flex items-center justify-between gap-2 mb-2">
+                <h1 class="text-xl font-bold text-slate-800">Admin Cultural</h1>
                 <button type="button" id="logoutBtn" class="hidden text-xs text-slate-400 hover:text-slate-700 font-semibold">Salir</button>
             </div>
-            <p class="text-slate-500 text-sm mt-1">Arrastrá el pin rojo (o hacé clic en el mapa) para establecer la ubicación.</p>
-            <div id="modeBadge" class="hidden mt-3 text-xs font-semibold px-3 py-2 rounded-lg"></div>
+            
+            <div id="modeBadge" class="hidden mb-3 text-[11px] font-semibold px-2.5 py-1.5 rounded-lg"></div>
+
+            <!-- Tabs -->
+            <div class="flex bg-slate-100 p-1 rounded-xl gap-1 text-xs font-bold">
+                <button type="button" id="tabBtnPoints" class="tab-btn flex-1 py-2 rounded-lg transition-all bg-white text-orange-600 shadow-sm" onclick="switchTab('points')">
+                    📍 Puntos
+                </button>
+                <button type="button" id="tabBtnAgenda" class="tab-btn flex-1 py-2 rounded-lg transition-all text-slate-600 hover:text-slate-900" onclick="switchTab('agenda')">
+                    📅 Agenda
+                </button>
+                <button type="button" id="tabBtnContact" class="tab-btn flex-1 py-2 rounded-lg transition-all text-slate-600 hover:text-slate-900" onclick="switchTab('contact')">
+                    📞 Contacto
+                </button>
+            </div>
         </div>
 
-        <div class="p-6 flex-1 overflow-y-auto">
-            <form id="pointForm" class="space-y-4">
+        <!-- Contenedor scrolleable de paneles -->
+        <div class="flex-1 overflow-y-auto p-5">
+            
+            <!-- PANEL 1: PUNTOS DEL MAPA -->
+            <div id="tabPanelPoints" class="tab-panel">
+                <p class="text-slate-500 text-xs mb-3">Arrastrá el pin rojo o hacé clic en el mapa para posicionar el punto.</p>
 
-                <div id="editBanner" class="hidden bg-sky-50 border border-sky-200 text-sky-800 text-sm rounded-lg px-3 py-2 flex items-center justify-between gap-2">
-                    <span>Editando: <b id="editTitle"></b></span>
-                    <button type="button" id="cancelEditBtn" class="text-xs font-bold text-sky-700 hover:text-sky-900 underline">Cancelar</button>
-                </div>
-
-                <div>
-                    <label class="block text-sm font-semibold text-slate-700 mb-1">Coordenadas</label>
-                    <div class="flex gap-2">
-                        <input type="text" id="lat" readonly class="w-full bg-slate-50 border border-slate-200 rounded-lg px-3 py-2 text-sm text-slate-600 focus:outline-none" placeholder="Latitud">
-                        <input type="text" id="lng" readonly class="w-full bg-slate-50 border border-slate-200 rounded-lg px-3 py-2 text-sm text-slate-600 focus:outline-none" placeholder="Longitud">
+                <form id="pointForm" class="space-y-4">
+                    <div id="editBanner" class="hidden bg-sky-50 border border-sky-200 text-sky-800 text-xs rounded-lg px-3 py-2 flex items-center justify-between gap-2">
+                        <span>Editando: <b id="editTitle"></b></span>
+                        <button type="button" id="cancelEditBtn" class="text-xs font-bold text-sky-700 hover:text-sky-900 underline">Cancelar</button>
                     </div>
-                </div>
 
-                <div>
-                    <label class="block text-sm font-semibold text-slate-700 mb-1">Título</label>
-                    <input type="text" id="title" required class="w-full border border-slate-300 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-orange-500 focus:border-orange-500 outline-none transition-all" placeholder="Ej: Teatro Municipal Unione">
-                </div>
-
-                <div>
-                    <label class="block text-sm font-semibold text-slate-700 mb-1">Categoría</label>
-                    <input type="text" id="category" required class="w-full border border-slate-300 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-orange-500 focus:border-orange-500 outline-none transition-all" placeholder="Ej: Teatro, Museo, Plaza">
-                </div>
-
-                <div>
-                    <label class="block text-sm font-semibold text-slate-700 mb-1">Sección en el Menú</label>
-                    <select id="section" class="w-full border border-slate-300 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-orange-500 focus:border-orange-500 outline-none transition-all bg-white">
-                        <option value="encuentro">Puntos de Encuentro</option>
-                        <option value="interes">Sitios de Interés</option>
-                        <option value="plazas">Plazas</option>
-                    </select>
-                </div>
-
-                <div class="mt-4 image-field">
-                    <label class="block text-sm font-semibold text-slate-700 mb-1">Imagen de Fondo Principal</label>
-                    <div class="flex gap-2">
-                        <input type="text" id="image" class="image-url w-full border border-slate-300 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-orange-500 focus:border-orange-500 outline-none transition-all" placeholder="URL o subí una foto (opcional)">
-                        <label class="shrink-0 cursor-pointer bg-orange-100 text-orange-600 hover:bg-orange-200 font-bold text-xs px-3 py-2 rounded-lg flex items-center transition-colors">
-                            📷 Subir foto
-                            <input type="file" accept="image/*" class="image-file hidden">
-                        </label>
+                    <div>
+                        <label class="block text-xs font-semibold text-slate-700 mb-1">Coordenadas</label>
+                        <div class="flex gap-2">
+                            <input type="text" id="lat" readonly class="w-full bg-slate-50 border border-slate-200 rounded-lg px-3 py-1.5 text-xs text-slate-600 focus:outline-none" placeholder="Latitud">
+                            <input type="text" id="lng" readonly class="w-full bg-slate-50 border border-slate-200 rounded-lg px-3 py-1.5 text-xs text-slate-600 focus:outline-none" placeholder="Longitud">
+                        </div>
                     </div>
-                    <img class="image-preview hidden mt-2 h-24 w-full object-cover rounded-lg border border-slate-200" alt="Vista previa">
-                </div>
 
-                <div class="mt-4">
-                    <div class="flex items-center justify-between mb-2">
-                        <label class="block text-sm font-semibold text-slate-700">Pantallas (Cards)</label>
-                        <button type="button" id="addScreenBtn" class="text-xs bg-orange-100 text-orange-600 px-2 py-1 rounded hover:bg-orange-200 font-bold transition-colors">+ Añadir Pantalla</button>
+                    <div>
+                        <label class="block text-xs font-semibold text-slate-700 mb-1">Título</label>
+                        <input type="text" id="title" required class="w-full border border-slate-300 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-orange-500 focus:border-orange-500 outline-none transition-all" placeholder="Ej: Teatro Municipal Unione">
                     </div>
-                    <div id="screensContainer" class="flex flex-col gap-3">
-                        <!-- Pantallas generadas dinamicamente -->
+
+                    <div>
+                        <label class="block text-xs font-semibold text-slate-700 mb-1">Categoría</label>
+                        <input type="text" id="category" required class="w-full border border-slate-300 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-orange-500 focus:border-orange-500 outline-none transition-all" placeholder="Ej: Teatro, Museo, Plaza">
                     </div>
+
+                    <div>
+                        <label class="block text-xs font-semibold text-slate-700 mb-1">Sección en el Menú</label>
+                        <select id="section" class="w-full border border-slate-300 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-orange-500 focus:border-orange-500 outline-none transition-all bg-white">
+                            <option value="encuentro">Puntos de Encuentro</option>
+                            <option value="interes">Sitios de Interés</option>
+                            <option value="plazas">Plazas</option>
+                        </select>
+                    </div>
+
+                    <div class="image-field">
+                        <label class="block text-xs font-semibold text-slate-700 mb-1">Imagen de Fondo Principal</label>
+                        <div class="flex gap-2">
+                            <input type="text" id="image" class="image-url w-full border border-slate-300 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-orange-500 focus:border-orange-500 outline-none transition-all" placeholder="URL o subí una foto (opcional)">
+                            <label class="shrink-0 cursor-pointer bg-orange-100 text-orange-600 hover:bg-orange-200 font-bold text-xs px-3 py-2 rounded-lg flex items-center transition-colors">
+                                📷 Subir
+                                <input type="file" accept="image/*" class="image-file hidden">
+                            </label>
+                        </div>
+                        <img class="image-preview hidden mt-2 h-20 w-full object-cover rounded-lg border border-slate-200" alt="Vista previa">
+                    </div>
+
+                    <div>
+                        <div class="flex items-center justify-between mb-2">
+                            <label class="block text-xs font-semibold text-slate-700">Pantallas (Cards)</label>
+                            <button type="button" id="addScreenBtn" class="text-xs bg-orange-100 text-orange-600 px-2 py-1 rounded hover:bg-orange-200 font-bold transition-colors">+ Añadir Pantalla</button>
+                        </div>
+                        <div id="screensContainer" class="flex flex-col gap-3"></div>
+                    </div>
+
+                    <div class="pt-2">
+                        <button type="submit" id="submitBtn" class="w-full bg-orange-500 hover:bg-orange-600 text-white font-bold py-2.5 px-4 rounded-xl shadow-md shadow-orange-200 transition-all active:scale-95 disabled:opacity-60 text-sm">
+                            Guardar Punto
+                        </button>
+                    </div>
+                </form>
+            </div>
+
+            <!-- PANEL 2: AGENDA CULTURAL -->
+            <div id="tabPanelAgenda" class="tab-panel hidden space-y-6">
+                <div>
+                    <h2 class="text-base font-bold text-slate-800">Editar Agenda Cultural</h2>
+                    <p class="text-slate-500 text-xs">Modificá los festivales y talleres culturales que se muestran en la ventana de Agenda.</p>
                 </div>
 
-                <div class="pt-4">
-                    <button type="submit" id="submitBtn" class="w-full bg-orange-500 hover:bg-orange-600 text-white font-bold py-3 px-4 rounded-xl shadow-lg shadow-orange-200 transition-all active:scale-95 disabled:opacity-60">
-                        Guardar Punto
-                    </button>
+                <form id="agendaForm" class="space-y-5">
+                    <div>
+                        <label class="block text-xs font-semibold text-slate-700 mb-1">Título de la sección</label>
+                        <input type="text" id="agendaTitle" class="w-full border border-slate-300 rounded-lg px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-orange-500" placeholder="Agenda Cultural">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-semibold text-slate-700 mb-1">Subtítulo</label>
+                        <input type="text" id="agendaSubtitle" class="w-full border border-slate-300 rounded-lg px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-orange-500" placeholder="Talleres, eventos y festivales en la ciudad">
+                    </div>
+
+                    <!-- Festivales -->
+                    <div class="border-t border-slate-200 pt-4">
+                        <div class="flex items-center justify-between mb-2">
+                            <label class="block text-xs font-bold uppercase tracking-wider text-amber-700">Festivales Destacados</label>
+                            <button type="button" id="addFestivalBtn" class="text-xs bg-amber-100 text-amber-700 px-2 py-1 rounded hover:bg-amber-200 font-bold transition-colors">+ Añadir Festival</button>
+                        </div>
+                        <div id="festivalsContainer" class="flex flex-col gap-3"></div>
+                    </div>
+
+                    <!-- Talleres -->
+                    <div class="border-t border-slate-200 pt-4">
+                        <div class="flex items-center justify-between mb-2">
+                            <label class="block text-xs font-bold uppercase tracking-wider text-emerald-700">Talleres Culturales</label>
+                            <button type="button" id="addWorkshopBtn" class="text-xs bg-emerald-100 text-emerald-700 px-2 py-1 rounded hover:bg-emerald-200 font-bold transition-colors">+ Añadir Taller</button>
+                        </div>
+                        <div id="workshopsContainer" class="flex flex-col gap-3"></div>
+                    </div>
+
+                    <div class="pt-2">
+                        <button type="submit" id="saveAgendaBtn" class="w-full bg-orange-500 hover:bg-orange-600 text-white font-bold py-2.5 px-4 rounded-xl shadow-md shadow-orange-200 transition-all active:scale-95 text-sm">
+                            Guardar Agenda
+                        </button>
+                    </div>
+                </form>
+            </div>
+
+            <!-- PANEL 3: CONTACTO -->
+            <div id="tabPanelContact" class="tab-panel hidden space-y-6">
+                <div>
+                    <h2 class="text-base font-bold text-slate-800">Editar Contacto y Atención</h2>
+                    <p class="text-slate-500 text-xs">Modificá los datos institucionales, teléfonos, correos y horarios que se muestran en Contacto.</p>
                 </div>
 
-                <div id="status" class="hidden p-3 rounded-lg text-sm text-center font-medium mt-2"></div>
-            </form>
+                <form id="contactForm" class="space-y-4">
+                    <div>
+                        <label class="block text-xs font-semibold text-slate-700 mb-1">Título de la sección</label>
+                        <input type="text" id="contactTitle" class="w-full border border-slate-300 rounded-lg px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-orange-500" placeholder="Contacto y Atención">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-semibold text-slate-700 mb-1">Subtítulo</label>
+                        <input type="text" id="contactSubtitle" class="w-full border border-slate-300 rounded-lg px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-orange-500" placeholder="Polo Digital - Ciudad de Dolores">
+                    </div>
+
+                    <div>
+                        <label class="block text-xs font-semibold text-slate-700 mb-1">📍 Dirección</label>
+                        <textarea id="contactAddress" rows="2" class="w-full border border-slate-300 rounded-lg px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-orange-500" placeholder="Bartolomé Mitre y 25 de Mayo, B7100 Dolores..."></textarea>
+                    </div>
+
+                    <div>
+                        <label class="block text-xs font-semibold text-slate-700 mb-1">📞 Teléfono</label>
+                        <input type="text" id="contactPhone" class="w-full border border-slate-300 rounded-lg px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-orange-500" placeholder="02245 442432">
+                    </div>
+
+                    <div>
+                        <label class="block text-xs font-semibold text-slate-700 mb-1">✉️ Correo Electrónico</label>
+                        <input type="email" id="contactEmail" class="w-full border border-slate-300 rounded-lg px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-orange-500" placeholder="cultura@dolores.gov.ar">
+                    </div>
+
+                    <div>
+                        <label class="block text-xs font-semibold text-slate-700 mb-1">🕒 Horario Habitual de Atención</label>
+                        <input type="text" id="contactHours" class="w-full border border-slate-300 rounded-lg px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-orange-500" placeholder="Lunes a viernes de 7:30 a 18:30 hs">
+                    </div>
+
+                    <div>
+                        <label class="block text-xs font-semibold text-slate-700 mb-1">Nota aclaratoria de horarios</label>
+                        <input type="text" id="contactHoursNote" class="w-full border border-slate-300 rounded-lg px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-orange-500" placeholder="(Sujeto a modificaciones según la época o eventos)">
+                    </div>
+
+                    <div class="pt-2">
+                        <button type="submit" id="saveContactBtn" class="w-full bg-orange-500 hover:bg-orange-600 text-white font-bold py-2.5 px-4 rounded-xl shadow-md shadow-orange-200 transition-all active:scale-95 text-sm">
+                            Guardar Contacto
+                        </button>
+                    </div>
+                </form>
+            </div>
+
+            <!-- Estado global / feedback -->
+            <div id="status" class="hidden p-3 rounded-lg text-xs text-center font-medium mt-3"></div>
+
         </div>
     </div>
 
@@ -110,12 +224,45 @@
     <!-- Leaflet JS -->
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
     <script>
+        // ================== Tabs ==================
+        function switchTab(tab) {
+            const tabs = ['points', 'agenda', 'contact'];
+            tabs.forEach(t => {
+                const btn = document.getElementById('tabBtn' + t.charAt(0).toUpperCase() + t.slice(1));
+                const panel = document.getElementById('tabPanel' + t.charAt(0).toUpperCase() + t.slice(1));
+                if (t === tab) {
+                    btn.className = 'tab-btn flex-1 py-2 rounded-lg transition-all bg-white text-orange-600 shadow-sm';
+                    panel.classList.remove('hidden');
+                } else {
+                    btn.className = 'tab-btn flex-1 py-2 rounded-lg transition-all text-slate-600 hover:text-slate-900';
+                    panel.classList.add('hidden');
+                }
+            });
+
+            // En celulares, ocultar el mapa al editar Agenda o Contacto para aprovechar toda la pantalla
+            const sidebar = document.getElementById('sidebar');
+            const mapEl = document.getElementById('map');
+            if (tab === 'points') {
+                sidebar.classList.remove('h-full');
+                sidebar.classList.add('h-1/2', 'md:h-full');
+                mapEl.classList.remove('hidden', 'md:block');
+                setTimeout(() => { if (typeof map !== 'undefined') map.invalidateSize(); }, 50);
+            } else {
+                sidebar.classList.remove('h-1/2');
+                sidebar.classList.add('h-full');
+                mapEl.classList.add('hidden', 'md:block');
+            }
+
+            // En pestaña agenda o contacto podemos refrescar sus datos
+            if (tab === 'agenda') loadAgenda();
+            if (tab === 'contact') loadContact();
+        }
+
         // ================== Configuración / sesión ==================
         let config = { mode: 'local', authRequired: false, assetBase: '' };
         const PW_KEY = 'adminPassword';
         const getPassword = () => sessionStorage.getItem(PW_KEY) || '';
 
-        // Llamada a la API con contraseña y manejo de errores legible
         async function api(url, options = {}) {
             const res = await fetch(url, {
                 ...options,
@@ -139,9 +286,7 @@
             return data;
         }
 
-        // Las fotos subidas se guardan como "/uploads/...": en el admin publicado se previsualizan desde GitHub
         const resolveAsset = (url) => (url && url.startsWith('/uploads/') ? config.assetBase + url : url);
-
         const escapeHtml = (s) => String(s ?? '').replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
 
         // ================== Login ==================
@@ -168,6 +313,8 @@
                 loginOverlay.classList.add('hidden');
                 document.getElementById('loginPassword').value = '';
                 loadExistingPoints();
+                loadAgenda();
+                loadContact();
             } catch (err) {
                 sessionStorage.removeItem(PW_KEY);
                 loginError.textContent = err.message;
@@ -194,8 +341,8 @@
             popupAnchor: [1, -34],
             shadowSize: [41, 41]
         });
-        const blueIcon = makeIcon('blue');   // puntos existentes
-        const redIcon = makeIcon('red');     // punto que se está creando/editando
+        const blueIcon = makeIcon('blue');
+        const redIcon = makeIcon('red');
 
         const newMarker = L.marker([-36.3132, -57.6792], {
             icon: redIcon,
@@ -214,7 +361,13 @@
         updateInputs(newMarker.getLatLng());
 
         newMarker.on('dragend', () => updateInputs(newMarker.getLatLng()));
-        map.on('click', (e) => { newMarker.setLatLng(e.latlng); updateInputs(e.latlng); });
+        map.on('click', (e) => { 
+            newMarker.setLatLng(e.latlng); 
+            updateInputs(e.latlng); 
+            if (document.getElementById('tabPanelPoints').classList.contains('hidden')) {
+                switchTab('points');
+            }
+        });
 
         // ================== Puntos existentes ==================
         const pointMarkers = {};
@@ -251,7 +404,7 @@
             }
         }
 
-        // ================== Mensajes ==================
+        // ================== Feedback / Estado ==================
         const statusDiv = document.getElementById('status');
         let statusTimer;
         function showStatus(text, kind = 'ok', ms = 6000) {
@@ -261,30 +414,29 @@
                 error: 'bg-red-100 text-red-700',
             };
             statusDiv.innerText = text;
-            statusDiv.className = `p-3 rounded-lg text-sm text-center font-medium mt-4 block ${styles[kind]}`;
+            statusDiv.className = `p-3 rounded-lg text-xs text-center font-medium mt-3 block ${styles[kind]}`;
             clearTimeout(statusTimer);
             if (ms) statusTimer = setTimeout(() => { statusDiv.className = 'hidden'; }, ms);
         }
         const publishNote = () => (config.mode === 'remote'
-            ? ' El mapa publicado se actualizará en 1–2 minutos.'
+            ? ' El sitio publicado se actualizará en 1–2 minutos.'
             : ' Ya podés verlo en la app local.');
 
-        // ================== Eliminar ==================
+        // ================== Eliminar y Editar Puntos ==================
         window.deletePoint = async function (id) {
             if (!confirm('¿Estás seguro de eliminar este punto?')) return;
             try {
                 await api(`/api/points/${id}`, { method: 'DELETE' });
                 removeMarker(id);
-                if (editingId === id) resetForm();
+                if (editingId === id) resetPointForm();
                 showStatus('Punto eliminado.' + publishNote(), 'warn');
             } catch (err) {
                 showStatus('Error eliminando punto: ' + err.message, 'error');
             }
         };
 
-        // ================== Editar ==================
         let editingId = null;
-        const form = document.getElementById('pointForm');
+        const pointForm = document.getElementById('pointForm');
         const submitBtn = document.getElementById('submitBtn');
         const editBanner = document.getElementById('editBanner');
 
@@ -295,6 +447,7 @@
         }
 
         window.editPoint = function (id) {
+            switchTab('points');
             const point = pointsById[id];
             if (!point) return;
             editingId = id;
@@ -318,24 +471,24 @@
             document.getElementById('editTitle').textContent = point.title;
             editBanner.classList.remove('hidden');
             submitBtn.innerText = 'Guardar cambios';
-            form.closest('.overflow-y-auto').scrollTop = 0;
+            pointForm.closest('.overflow-y-auto').scrollTop = 0;
         };
 
-        function resetForm() {
+        function resetPointForm() {
             editingId = null;
-            form.reset();
+            pointForm.reset();
             updateInputs(newMarker.getLatLng());
             screensContainer.innerHTML = '';
-            document.querySelectorAll('.image-preview').forEach((i) => i.classList.add('hidden'));
+            document.querySelectorAll('#pointForm .image-preview').forEach((i) => i.classList.add('hidden'));
             addScreen();
             editBanner.classList.add('hidden');
             submitBtn.innerText = 'Guardar Punto';
         }
 
-        document.getElementById('cancelEditBtn').addEventListener('click', resetForm);
+        document.getElementById('cancelEditBtn').addEventListener('click', resetPointForm);
 
-        // ================== Guardar (crear / editar) ==================
-        form.addEventListener('submit', async (e) => {
+        // Guardar Punto
+        pointForm.addEventListener('submit', async (e) => {
             e.preventDefault();
 
             if (document.querySelector('.image-url[data-uploading="1"]')) {
@@ -366,7 +519,7 @@
                     ? await api(`/api/points/${editingId}`, { method: 'PUT', body: JSON.stringify(pointData) })
                     : await api('/api/points', { method: 'POST', body: JSON.stringify(pointData) });
                 upsertMarker(res.point);
-                resetForm();
+                resetPointForm();
                 showStatus((wasEditing ? '¡Cambios guardados!' : '¡Punto agregado!') + publishNote(), 'ok', 8000);
             } catch (err) {
                 showStatus('Error al guardar el punto: ' + err.message, 'error', 0);
@@ -376,9 +529,8 @@
             }
         });
 
-        // ================== Pantallas dinámicas ==================
+        // ================== Pantallas Dinámicas (Puntos) ==================
         const screensContainer = document.getElementById('screensContainer');
-
         function renumberScreens() {
             screensContainer.querySelectorAll('.screen-number').forEach((el, i) => { el.textContent = `Pantalla ${i + 1}`; });
         }
@@ -416,8 +568,6 @@
         addScreen();
 
         // ================== Subida de fotos ==================
-        // Achica la foto antes de subirla (máx. 1600 px, JPG). Vercel no acepta envíos > ~4,5 MB
-        // y además el mapa carga más rápido.
         function readAsDataURL(file) {
             return new Promise((resolve, reject) => {
                 const r = new FileReader();
@@ -429,7 +579,7 @@
 
         async function prepareImage(file) {
             const original = await readAsDataURL(file);
-            if (file.type === 'image/gif') return original; // no romper animaciones
+            if (file.type === 'image/gif') return original;
             const img = await new Promise((resolve, reject) => {
                 const i = new Image();
                 i.onload = () => resolve(i);
@@ -463,7 +613,7 @@
             urlInput.dataset.uploading = '1';
             try {
                 const data = await prepareImage(file);
-                preview.src = data; // vista previa inmediata
+                preview.src = data;
                 preview.classList.remove('hidden');
                 const res = await api('/api/upload', {
                     method: 'POST',
@@ -479,10 +629,275 @@
             }
         });
 
-        // Previsualizar también cuando se pega una URL
         document.addEventListener('input', (e) => {
             if (!e.target.classList.contains('image-url')) return;
             setPreview(e.target.closest('.image-field'), e.target.value.trim());
+        });
+
+        // ================== PESTAÑA: AGENDA CULTURAL ==================
+        const festivalsContainer = document.getElementById('festivalsContainer');
+        const workshopsContainer = document.getElementById('workshopsContainer');
+
+        const MONTHS = [
+            { name: 'Enero', days: 31 },
+            { name: 'Febrero', days: 29 },
+            { name: 'Marzo', days: 31 },
+            { name: 'Abril', days: 30 },
+            { name: 'Mayo', days: 31 },
+            { name: 'Junio', days: 30 },
+            { name: 'Julio', days: 31 },
+            { name: 'Agosto', days: 31 },
+            { name: 'Septiembre', days: 30 },
+            { name: 'Octubre', days: 31 },
+            { name: 'Noviembre', days: 30 },
+            { name: 'Diciembre', days: 31 }
+        ];
+
+        function parseFestivalDate(dateStr) {
+            if (!dateStr) return { month: '', day: '' };
+            const lower = String(dateStr).toLowerCase();
+            const foundMonth = MONTHS.find(m => lower.includes(m.name.toLowerCase()));
+            if (!foundMonth) return { month: '', day: '' };
+            const dayMatch = lower.match(/\b(\d{1,2})\s+de\s+/);
+            let day = '';
+            if (dayMatch) {
+                const n = parseInt(dayMatch[1], 10);
+                if (n >= 1 && n <= foundMonth.days) day = String(n);
+            }
+            return { month: foundMonth.name, day };
+        }
+
+        function updateDayOptions(monthSelect, daySelect, selectedDay = '') {
+            const monthObj = MONTHS.find(m => m.name === monthSelect.value);
+            const currentVal = selectedDay !== '' ? selectedDay : daySelect.value;
+            daySelect.innerHTML = '';
+
+            if (!monthObj) {
+                daySelect.disabled = true;
+                daySelect.innerHTML = '<option value="">Día</option>';
+                return;
+            }
+
+            daySelect.disabled = false;
+            const optEmpty = document.createElement('option');
+            optEmpty.value = '';
+            optEmpty.textContent = 'Todo el mes';
+            daySelect.appendChild(optEmpty);
+
+            for (let d = 1; d <= monthObj.days; d++) {
+                const opt = document.createElement('option');
+                opt.value = String(d);
+                opt.textContent = String(d);
+                daySelect.appendChild(opt);
+            }
+
+            if (currentVal && parseInt(currentVal, 10) <= monthObj.days) {
+                daySelect.value = currentVal;
+            } else if (currentVal && parseInt(currentVal, 10) > monthObj.days) {
+                daySelect.value = String(monthObj.days);
+            } else {
+                daySelect.value = '';
+            }
+        }
+
+        const AGENDA_ICONS = [
+            { value: '', label: 'Sin pin' },
+            { value: '📍', label: '📍 Pin' },
+            { value: '🎉', label: '🎉 Festival' },
+            { value: '🎸', label: '🎸 Música' },
+            { value: '🎭', label: '🎭 Teatro' },
+            { value: '🎨', label: '🎨 Arte' },
+            { value: '💃', label: '💃 Danza' },
+            { value: '🍰', label: '🍰 Gastronomía' },
+            { value: '📚', label: '📚 Literatura' },
+            { value: '🏛️', label: '🏛️ Patrimonio' },
+            { value: '🎤', label: '🎤 Show' },
+            { value: '✨', label: '✨ Destacado' }
+        ];
+
+        function badgePickerHtml(item = {}) {
+            return `
+                <div class="image-field pt-1.5 border-t border-slate-200/70 space-y-1.5">
+                    <div class="flex flex-wrap gap-1.5 items-center">
+                        <select class="agenda-icon min-w-[105px] border border-slate-300 rounded px-2 py-1.5 text-xs outline-none bg-white">
+                            ${AGENDA_ICONS.map(ic => `<option value="${ic.value}" ${item.icon === ic.value ? 'selected' : ''}>${ic.label}</option>`).join('')}
+                        </select>
+                        <input type="text" class="agenda-logo image-url min-w-[120px] flex-1 border border-slate-300 rounded px-2 py-1.5 text-xs outline-none focus:ring-1 focus:ring-orange-500" placeholder="O logo (URL o subir)" value="${escapeHtml(item.logo || '')}">
+                        <label class="shrink-0 cursor-pointer bg-orange-100 text-orange-600 hover:bg-orange-200 font-bold text-xs px-2.5 py-1.5 rounded flex items-center transition-colors">
+                            📷 Logo
+                            <input type="file" accept="image/*" class="image-file hidden">
+                        </label>
+                    </div>
+                    <img class="image-preview hidden h-12 w-12 object-cover rounded-lg border border-slate-200 bg-white" alt="Logo">
+                </div>
+            `;
+        }
+
+        function addFestivalItem(item = {}) {
+            const { month, day } = parseFestivalDate(item.date);
+            const div = document.createElement('div');
+            div.className = 'festival-item bg-amber-50/60 p-3 rounded-xl border border-amber-200/70 space-y-2 relative';
+            div.innerHTML = `
+                <div class="flex justify-between items-center">
+                    <span class="text-[11px] font-bold text-amber-800 uppercase tracking-wide">Festival / Evento</span>
+                    <button type="button" class="text-xs text-red-500 hover:text-red-700 font-bold" onclick="this.closest('.festival-item').remove()">Quitar</button>
+                </div>
+                <input type="text" class="fest-title w-full border border-slate-300 rounded px-2.5 py-1.5 text-xs outline-none focus:ring-1 focus:ring-amber-500 font-bold text-slate-800" placeholder="Nombre (ej: Fiesta Nacional de la Guitarra)" value="${escapeHtml(item.title || '')}">
+                <textarea rows="2" class="fest-desc w-full border border-slate-300 rounded px-2.5 py-1.5 text-xs outline-none focus:ring-1 focus:ring-amber-500" placeholder="Descripción breve">${escapeHtml(item.description || '')}</textarea>
+                <div class="grid grid-cols-3 gap-2">
+                    <select class="fest-month min-w-0 w-full border border-slate-300 rounded px-2 py-1.5 text-xs outline-none focus:ring-1 focus:ring-amber-500 bg-white">
+                        <option value="">Mes...</option>
+                        ${MONTHS.map(m => `<option value="${m.name}" ${m.name === month ? 'selected' : ''}>${m.name}</option>`).join('')}
+                    </select>
+                    <select class="fest-day min-w-0 w-full border border-slate-300 rounded px-2 py-1.5 text-xs outline-none focus:ring-1 focus:ring-amber-500 bg-white disabled:bg-slate-100 disabled:text-slate-400">
+                        <option value="">Día</option>
+                    </select>
+                    <select class="fest-color min-w-0 w-full border border-slate-300 rounded px-2 py-1.5 text-xs outline-none bg-white">
+                        <option value="amber" ${item.color === 'amber' ? 'selected' : ''}>Ámbar</option>
+                        <option value="sky" ${item.color === 'sky' ? 'selected' : ''}>Celeste</option>
+                    </select>
+                </div>
+                ${badgePickerHtml(item)}
+            `;
+            const monthSelect = div.querySelector('.fest-month');
+            const daySelect = div.querySelector('.fest-day');
+            updateDayOptions(monthSelect, daySelect, day);
+            monthSelect.addEventListener('change', () => updateDayOptions(monthSelect, daySelect));
+            setPreview(div.querySelector('.image-field'), item.logo);
+            festivalsContainer.appendChild(div);
+        }
+
+        function addWorkshopItem(item = {}) {
+            const div = document.createElement('div');
+            div.className = 'workshop-item bg-emerald-50/60 p-3 rounded-xl border border-emerald-200/70 space-y-2 relative';
+            div.innerHTML = `
+                <div class="flex justify-between items-center">
+                    <span class="text-[11px] font-bold text-emerald-800 uppercase tracking-wide">Taller Cultural</span>
+                    <button type="button" class="text-xs text-red-500 hover:text-red-700 font-bold" onclick="this.closest('.workshop-item').remove()">Quitar</button>
+                </div>
+                <input type="text" class="ws-title w-full border border-slate-300 rounded px-2.5 py-1.5 text-xs outline-none focus:ring-1 focus:ring-emerald-500 font-bold text-slate-800" placeholder="Nombre (ej: Taller de Guitarra)" value="${escapeHtml(item.title || '')}">
+                <textarea rows="2" class="ws-desc w-full border border-slate-300 rounded px-2.5 py-1.5 text-xs outline-none focus:ring-1 focus:ring-emerald-500" placeholder="Descripción breve">${escapeHtml(item.description || '')}</textarea>
+                <input type="text" class="ws-schedule w-full border border-slate-300 rounded px-2.5 py-1.5 text-xs outline-none focus:ring-1 focus:ring-emerald-500 font-medium text-emerald-800" placeholder="Días y horarios (ej: Martes y Jueves, 17:00 hs)" value="${escapeHtml(item.schedule || '')}">
+                ${badgePickerHtml(item)}
+            `;
+            setPreview(div.querySelector('.image-field'), item.logo);
+            workshopsContainer.appendChild(div);
+        }
+
+        document.getElementById('addFestivalBtn').addEventListener('click', () => addFestivalItem());
+        document.getElementById('addWorkshopBtn').addEventListener('click', () => addWorkshopItem());
+
+        async function loadAgenda() {
+            try {
+                const agenda = await api('/api/agenda');
+                document.getElementById('agendaTitle').value = agenda.title || '';
+                document.getElementById('agendaSubtitle').value = agenda.subtitle || '';
+                
+                festivalsContainer.innerHTML = '';
+                (agenda.festivals || []).forEach(f => addFestivalItem(f));
+                if (!agenda.festivals || agenda.festivals.length === 0) addFestivalItem();
+
+                workshopsContainer.innerHTML = '';
+                (agenda.workshops || []).forEach(w => addWorkshopItem(w));
+                if (!agenda.workshops || agenda.workshops.length === 0) addWorkshopItem();
+            } catch (err) {
+                console.error('Error cargando agenda:', err);
+            }
+        }
+
+        document.getElementById('agendaForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            if (document.querySelector('.image-url[data-uploading="1"]')) {
+                showStatus('Esperá a que termine de subirse el logo.', 'warn', 3000);
+                return;
+            }
+            const saveBtn = document.getElementById('saveAgendaBtn');
+            saveBtn.disabled = true;
+            saveBtn.innerText = 'Guardando Agenda...';
+
+            const festivals = Array.from(document.querySelectorAll('.festival-item')).map((div, i) => {
+                const month = div.querySelector('.fest-month').value;
+                const day = div.querySelector('.fest-day').value;
+                const date = month ? (day ? `${day} de ${month}` : month) : '';
+                return {
+                    id: i + 1,
+                    title: div.querySelector('.fest-title').value.trim(),
+                    description: div.querySelector('.fest-desc').value.trim(),
+                    date,
+                    color: div.querySelector('.fest-color').value,
+                    icon: div.querySelector('.agenda-icon').value,
+                    logo: div.querySelector('.agenda-logo').value.trim()
+                };
+            }).filter(f => f.title);
+
+            const workshops = Array.from(document.querySelectorAll('.workshop-item')).map((div, i) => ({
+                id: i + 1,
+                title: div.querySelector('.ws-title').value.trim(),
+                description: div.querySelector('.ws-desc').value.trim(),
+                schedule: div.querySelector('.ws-schedule').value.trim(),
+                icon: div.querySelector('.agenda-icon').value,
+                logo: div.querySelector('.agenda-logo').value.trim()
+            })).filter(w => w.title);
+
+            const payload = {
+                title: document.getElementById('agendaTitle').value.trim(),
+                subtitle: document.getElementById('agendaSubtitle').value.trim(),
+                festivals,
+                workshops
+            };
+
+            try {
+                await api('/api/agenda', { method: 'PUT', body: JSON.stringify(payload) });
+                showStatus('¡Agenda actualizada!' + publishNote(), 'ok', 7000);
+            } catch (err) {
+                showStatus('Error guardando agenda: ' + err.message, 'error', 0);
+            } finally {
+                saveBtn.disabled = false;
+                saveBtn.innerText = 'Guardar Agenda';
+            }
+        });
+
+        // ================== PESTAÑA: CONTACTO ==================
+        async function loadContact() {
+            try {
+                const c = await api('/api/contact');
+                document.getElementById('contactTitle').value = c.title || '';
+                document.getElementById('contactSubtitle').value = c.subtitle || '';
+                document.getElementById('contactAddress').value = c.address || '';
+                document.getElementById('contactPhone').value = c.phone || '';
+                document.getElementById('contactEmail').value = c.email || '';
+                document.getElementById('contactHours').value = c.hours || '';
+                document.getElementById('contactHoursNote').value = c.hoursNote || '';
+            } catch (err) {
+                console.error('Error cargando contacto:', err);
+            }
+        }
+
+        document.getElementById('contactForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const saveBtn = document.getElementById('saveContactBtn');
+            saveBtn.disabled = true;
+            saveBtn.innerText = 'Guardando Contacto...';
+
+            const payload = {
+                title: document.getElementById('contactTitle').value.trim(),
+                subtitle: document.getElementById('contactSubtitle').value.trim(),
+                address: document.getElementById('contactAddress').value.trim(),
+                phone: document.getElementById('contactPhone').value.trim(),
+                email: document.getElementById('contactEmail').value.trim(),
+                hours: document.getElementById('contactHours').value.trim(),
+                hoursNote: document.getElementById('contactHoursNote').value.trim()
+            };
+
+            try {
+                await api('/api/contact', { method: 'PUT', body: JSON.stringify(payload) });
+                showStatus('¡Contacto actualizado!' + publishNote(), 'ok', 7000);
+            } catch (err) {
+                showStatus('Error guardando contacto: ' + err.message, 'error', 0);
+            } finally {
+                saveBtn.disabled = false;
+                saveBtn.innerText = 'Guardar Contacto';
+            }
         });
 
         // ================== Inicio ==================
@@ -495,15 +910,19 @@
             const badge = document.getElementById('modeBadge');
             badge.classList.remove('hidden');
             if (config.mode === 'remote') {
-                badge.className = 'mt-3 text-xs font-semibold px-3 py-2 rounded-lg bg-emerald-50 text-emerald-700 border border-emerald-200';
-                badge.textContent = '🌐 Modo publicado: los cambios se suben solos al mapa (tardan 1–2 min).';
+                badge.className = 'mb-3 text-[11px] font-semibold px-2.5 py-1.5 rounded-lg bg-emerald-50 text-emerald-700 border border-emerald-200';
+                badge.textContent = '🌐 Modo publicado: los cambios se suben solos a GitHub y Vercel (1–2 min).';
             } else {
-                badge.className = 'mt-3 text-xs font-semibold px-3 py-2 rounded-lg bg-slate-50 text-slate-600 border border-slate-200';
-                badge.textContent = '💻 Modo local: los cambios se guardan en esta computadora.';
+                badge.className = 'mb-3 text-[11px] font-semibold px-2.5 py-1.5 rounded-lg bg-slate-50 text-slate-600 border border-slate-200';
+                badge.textContent = '💻 Modo local: los cambios se guardan directamente en disco.';
             }
             if (config.authRequired) logoutBtn.classList.remove('hidden');
             if (config.authRequired && !getPassword()) showLogin();
-            else loadExistingPoints();
+            else {
+                loadExistingPoints();
+                loadAgenda();
+                loadContact();
+            }
         })();
     </script>
 </body>

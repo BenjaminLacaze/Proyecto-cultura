@@ -1,0 +1,59 @@
+{
+  "title": "Agenda Cultural",
+  "subtitle": "Talleres, eventos y festivales en la ciudad",
+  "festivals": [
+    {
+      "id": 1,
+      "title": "Fiesta Nacional de la Guitarra",
+      "description": "Celebración anual que rinde homenaje a Abel Fleury. Shows musicales, ferias y jineteada.",
+      "date": "Marzo",
+      "color": "amber",
+      "icon": "🎉",
+      "logo": ""
+    },
+    {
+      "id": 2,
+      "title": "Fiesta de la Torta Argentina",
+      "description": "Concurso, degustaciones y espectáculos para celebrar nuestro patrimonio gastronómico.",
+      "date": "25 de Mayo",
+      "color": "sky",
+      "icon": "",
+      "logo": ""
+    },
+    {
+      "id": 3,
+      "title": "Fiesta de benja",
+      "description": "aaaa",
+      "date": "11 de Mayo",
+      "color": "sky",
+      "icon": "",
+      "logo": ""
+    }
+  ],
+  "workshops": [
+    {
+      "id": 1,
+      "title": "Taller de Guitarra y Folclore",
+      "description": "Clases para principiantes y avanzados.",
+      "schedule": "Martes y Jueves, 17:00 hs",
+      "icon": "",
+      "logo": ""
+    },
+    {
+      "id": 2,
+      "title": "Taller de Artes Plásticas",
+      "description": "Pintura, dibujo y expresión creativa para todas las edades.",
+      "schedule": "Miércoles, 15:30 hs",
+      "icon": "",
+      "logo": ""
+    },
+    {
+      "id": 3,
+      "title": "Tango y Milonga",
+      "description": "Aprende a bailar nuestra música ciudadana.",
+      "schedule": "Viernes, 19:00 hs",
+      "icon": "",
+      "logo": ""
+    }
+  ]
+}

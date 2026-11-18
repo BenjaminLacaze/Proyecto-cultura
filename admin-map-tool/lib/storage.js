@@ -7,6 +7,8 @@ const path = require('path');
 
 const REPO_ROOT = path.join(__dirname, '..', '..');
 const POINTS_REL = 'frontend/src/data/points.json';
+const AGENDA_REL = 'frontend/src/data/agenda.json';
+const CONTACT_REL = 'frontend/src/data/contact.json';
 const UPLOADS_REL = 'frontend/public/uploads';
 
 const cfg = () => ({
@@ -76,53 +78,87 @@ async function writeRemoteFile(rel, buffer, sha, message) {
     });
 }
 
-// ---------- Puntos ----------
-function parsePoints(text) {
-    if (!text) return [];
+// ---------- Helper genérico para archivos JSON ----------
+function parseJson(text, fallback = null) {
+    if (!text) return fallback;
     try {
-        const p = JSON.parse(text);
-        return Array.isArray(p) ? p : [];
+        return JSON.parse(text);
     } catch {
-        return [];
+        return fallback;
     }
 }
 
-async function loadPoints() {
+async function loadJsonFile(rel, fallback = null) {
     if (isRemote()) {
-        const { text, sha } = await readRemoteFile(POINTS_REL);
-        return { points: parsePoints(text), sha };
+        const { text, sha } = await readRemoteFile(rel);
+        return { data: parseJson(text, fallback), sha };
     }
-    const file = path.join(REPO_ROOT, POINTS_REL);
+    const file = path.join(REPO_ROOT, rel);
     const text = fs.existsSync(file) ? fs.readFileSync(file, 'utf8') : null;
-    return { points: parsePoints(text), sha: null };
+    return { data: parseJson(text, fallback), sha: null };
 }
 
-async function readPoints() {
-    return (await loadPoints()).points;
-}
-
-/**
- * Lee los puntos, aplica `mutate(points)` y guarda el resultado.
- * `mutate` devuelve { points, result, message }.
- * En modo publicado, si otra persona guardó al mismo tiempo, reintenta.
- */
-async function updatePoints(mutate) {
+async function updateJsonFile(rel, mutate, fallback = null) {
     for (let attempt = 0; ; attempt++) {
-        const { points, sha } = await loadPoints();
-        const { points: next, result, message } = mutate(points);
+        const { data, sha } = await loadJsonFile(rel, fallback);
+        const { next, result, message } = mutate(data);
         const json = JSON.stringify(next, null, 2);
         if (!isRemote()) {
-            fs.writeFileSync(path.join(REPO_ROOT, POINTS_REL), json, 'utf8');
+            const file = path.join(REPO_ROOT, rel);
+            fs.mkdirSync(path.dirname(file), { recursive: true });
+            fs.writeFileSync(file, json, 'utf8');
             return result;
         }
         try {
-            await writeRemoteFile(POINTS_REL, Buffer.from(json, 'utf8'), sha, message);
+            await writeRemoteFile(rel, Buffer.from(json, 'utf8'), sha, message);
             return result;
         } catch (e) {
             if ((e.status === 409 || e.status === 422) && attempt < 3) continue;
             throw e;
         }
     }
+}
+
+// ---------- Puntos ----------
+async function readPoints() {
+    const { data } = await loadJsonFile(POINTS_REL, []);
+    return Array.isArray(data) ? data : [];
+}
+
+async function updatePoints(mutate) {
+    return updateJsonFile(POINTS_REL, (points) => {
+        const arr = Array.isArray(points) ? points : [];
+        const { points: next, result, message } = mutate(arr);
+        return { next, result, message };
+    }, []);
+}
+
+// ---------- Agenda ----------
+async function readAgenda() {
+    const { data } = await loadJsonFile(AGENDA_REL, {});
+    return data || {};
+}
+
+async function updateAgenda(newAgenda) {
+    return updateJsonFile(AGENDA_REL, () => ({
+        next: newAgenda,
+        result: newAgenda,
+        message: 'admin: actualiza agenda cultural'
+    }), {});
+}
+
+// ---------- Contacto ----------
+async function readContact() {
+    const { data } = await loadJsonFile(CONTACT_REL, {});
+    return data || {};
+}
+
+async function updateContact(newContact) {
+    return updateJsonFile(CONTACT_REL, () => ({
+        next: newContact,
+        result: newContact,
+        message: 'admin: actualiza datos de contacto'
+    }), {});
 }
 
 // ---------- Imágenes ----------
@@ -142,6 +178,10 @@ module.exports = {
     assetBase,
     readPoints,
     updatePoints,
+    readAgenda,
+    updateAgenda,
+    readContact,
+    updateContact,
     saveImage,
     UPLOADS_DIR: path.join(REPO_ROOT, UPLOADS_REL),
 };

@@ -22,6 +22,8 @@ app.all('/api/config', adapt('config'));
 app.all('/api/login', adapt('login'));
 app.all('/api/points', adapt('points'));
 app.all('/api/points/:id', adapt('pointById'));
+app.all('/api/agenda', adapt('agenda'));
+app.all('/api/contact', adapt('contact'));
 app.all('/api/upload', adapt('upload'));
 
 const PORT = process.env.PORT || 3000;

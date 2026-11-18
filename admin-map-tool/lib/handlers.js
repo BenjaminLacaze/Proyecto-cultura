@@ -101,6 +101,26 @@ const routes = {
         return fail(405, 'Método no permitido');
     },
 
+    async agenda({ method, body }) {
+        if (method === 'GET') return ok(await storage.readAgenda());
+        if (method === 'PUT' || method === 'POST') {
+            if (!body || typeof body !== 'object') return fail(400, 'Datos de agenda inválidos');
+            const saved = await storage.updateAgenda(body);
+            return ok({ message: 'Agenda actualizada exitosamente', agenda: saved });
+        }
+        return fail(405, 'Método no permitido');
+    },
+
+    async contact({ method, body }) {
+        if (method === 'GET') return ok(await storage.readContact());
+        if (method === 'PUT' || method === 'POST') {
+            if (!body || typeof body !== 'object') return fail(400, 'Datos de contacto inválidos');
+            const saved = await storage.updateContact(body);
+            return ok({ message: 'Contacto actualizado exitosamente', contact: saved });
+        }
+        return fail(405, 'Método no permitido');
+    },
+
     async upload({ method, body }) {
         if (method !== 'POST') return fail(405, 'Método no permitido');
         const { filename, data } = body || {};

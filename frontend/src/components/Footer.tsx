@@ -37,7 +37,20 @@ const Footer: React.FC = () => {
           </div>
           <div className="flex items-center space-x-2">
             <span>Desarrollado por</span>
-            <img src={developerLogo} alt="Logo del Desarrollador" className="h-8 w-auto object-contain" />
+            <a
+              href="https://github.com/BenjaminLacaze"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="inline-flex items-center space-x-2 text-slate-700 hover:text-orange-600 transition-colors group font-medium"
+              title="GitHub de Benjamin Lacaze"
+            >
+              <img
+                src={developerLogo}
+                alt="Logo de Benjamin Lacaze"
+                className="h-8 w-auto object-contain transition-transform group-hover:scale-105"
+              />
+              <span className="hover:underline">Benjamin Lacaze</span>
+            </a>
           </div>
         </div>
       </div>
