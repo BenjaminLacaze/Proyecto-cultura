@@ -29,31 +29,6 @@
     "id": 6
   },
   {
-    "title": "Plaza Castelli",
-    "category": "Plaza",
-    "section": "plazas",
-    "image": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcS2E1ven-B7zLjzmI3t3l9w_iL4ZebG0CYvQU-qHGYoPg&s=10",
-    "position": [
-      -36.31536,
-      -57.67556
-    ],
-    "screens": [
-      {
-        "image": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcS2E1ven-B7zLjzmI3t3l9w_iL4ZebG0CYvQU-qHGYoPg&s=10",
-        "text": "Plaza principal"
-      },
-      {
-        "image": "",
-        "text": ""
-      },
-      {
-        "image": "",
-        "text": ""
-      }
-    ],
-    "id": 9
-  },
-  {
     "title": "comisaria",
     "category": "comizaria",
     "section": "interes",
