@@ -29,27 +29,6 @@
     "id": 6
   },
   {
-    "title": "Teatro Municipal Unione",
-    "category": "Teatro",
-    "section": "encuentro",
-    "image": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRKd_WIiGyGLha0N3uP8vIiah8xZiSmcDInhYeemOksFm11wYI9HTPYqyw3&s=10",
-    "position": [
-      -36.3172,
-      -57.67471
-    ],
-    "screens": [
-      {
-        "image": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTptHdIglrxZHj8qRUJnvDvn8T5mHBzbrSt-m5tXRQb7qG27FxQR8iZN8vh&s=10",
-        "text": "Teatro Unione: Es uno de los edificios culturales e históricos más importantes de Dolores. Su construcción comenzó en 1876, impulsada por la colectividad italiana, y se desarrolló durante varias décadas. De estilo lírico italiano, cuenta con platea, palcos, galería, paraíso y foso para orquesta. Se destaca por su excelente acústica y por albergar espectáculos de teatro, música, ópera y otras expresiones artísticas. Actualmente tiene capacidad para unas 450 personas y continúa siendo un importante espacio cultural de la ciudad"
-      },
-      {
-        "image": "https://dolores.gob.ar/wp-content/uploads/2015/02/TEATRO-UNIONE-4-1.jpg",
-        "text": "En 2026 cumplió 150 años y se realizaron trabajos de restauración y puesta en valor, incluyendo la renovación de su fachada."
-      }
-    ],
-    "id": 7
-  },
-  {
     "title": "Plaza Castelli",
     "category": "Plaza",
     "section": "plazas",
