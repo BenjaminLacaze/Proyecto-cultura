@@ -1,34 +1,5 @@
 [
   {
-    "title": "Plaza Moreno",
-    "category": "Plaza",
-    "section": "plazas",
-    "image": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRpmaTsj0EWF1GUpp2bEcRmm8LyKRY2F3xmhZPF2Y8t7GztIYa6iw98Id4&s=10",
-    "position": [
-      -36.31819,
-      -57.68557
-    ],
-    "screens": [
-      {
-        "image": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcR74KG1mvyjnzSqAMyveqvUkbDjVhsdWxORXjN3jDdZOSILlniFhzwrkEKI&s=10",
-        "text": "Glorieta: Estructura tradicional de la plaza, utilizada históricamente como espacio para actividades culturales y encuentros comunitarios. Su presencia le aporta un carácter histórico y distintivo al lugar."
-      },
-      {
-        "image": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSpyykel3rFApDfL8UntBL3GdR0m10y2WX1aal9xbD812iomgynEVhLqq8&s=10",
-        "text": "uegos infantiles: Sector destinado a los más chicos, con juegos recreativos y espacios pensados para el entretenimiento y la convivencia familiar."
-      },
-      {
-        "image": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSu89MwxMskNzfqjy0kaCYyNITmuYZ1IXGW5FYgHXgbOByEnMWTw0TOasep&s=10",
-        "text": "Campo de bochas: Espacio tradicional de la plaza destinado a la práctica de bochas, una actividad vinculada especialmente con el encuentro y la recreación de los vecinos."
-      },
-      {
-        "image": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcS8FG4_YT8ouQBdG0wsp6IqbSnMZkCIfVvnnWTtT0QaK1-46eiIf64WhTk&s=10",
-        "text": "Fuente: Elemento ornamental de la plaza que complementa el espacio verde y aporta un punto característico dentro de su paisaje."
-      }
-    ],
-    "id": 6
-  },
-  {
     "title": "comisaria",
     "category": "comizaria",
     "section": "interes",
