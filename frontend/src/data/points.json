@@ -1,22 +1,5 @@
 [
   {
-    "title": "comisaria",
-    "category": "comizaria",
-    "section": "interes",
-    "image": "",
-    "position": [
-      -36.31367,
-      -57.68005
-    ],
-    "screens": [
-      {
-        "image": "",
-        "text": "policia"
-      }
-    ],
-    "id": 10
-  },
-  {
     "title": "parque",
     "category": "plaza",
     "section": "plazas",
