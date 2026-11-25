@@ -36,5 +36,22 @@
       }
     ],
     "id": 3
+  },
+  {
+    "title": "Secretaria de Cultura",
+    "category": "Dependencia POLO FLEURY",
+    "section": "interes",
+    "image": "",
+    "position": [
+      -36.31084,
+      -57.67878
+    ],
+    "screens": [
+      {
+        "image": "",
+        "text": ""
+      }
+    ],
+    "id": 4
   }
 ]
