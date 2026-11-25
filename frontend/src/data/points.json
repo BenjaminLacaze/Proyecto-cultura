@@ -43,12 +43,16 @@
     "section": "interes",
     "image": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTv_fnSxs-ULTVhtYqQRTJUI_SgzNJdctVwXOQh9sADwzMwSiurR_8OFT5f&s=10",
     "position": [
-      -36.31084,
-      -57.67878
+      -36.31087,
+      -57.67858
     ],
     "screens": [
       {
         "image": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTv_fnSxs-ULTVhtYqQRTJUI_SgzNJdctVwXOQh9sADwzMwSiurR_8OFT5f&s=10",
+        "text": ""
+      },
+      {
+        "image": "/uploads/1795614638496-1--81-.jpg",
         "text": ""
       }
     ],
