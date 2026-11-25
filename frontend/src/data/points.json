@@ -19,5 +19,22 @@
       }
     ],
     "id": 2
+  },
+  {
+    "title": "Plaza",
+    "category": "Plaza",
+    "section": "plazas",
+    "image": "",
+    "position": [
+      -36.31061,
+      -57.67947
+    ],
+    "screens": [
+      {
+        "image": "",
+        "text": ""
+      }
+    ],
+    "id": 3
   }
 ]
