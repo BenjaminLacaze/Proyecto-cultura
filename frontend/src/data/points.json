@@ -23,5 +23,26 @@
       }
     ],
     "id": 1
+  },
+  {
+    "title": "Plaza Moreno",
+    "category": "Plaza",
+    "section": "plazas",
+    "image": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcR78r-taf5BtKQnQrO4jgyvTPeMU5uVt6luYL17EXxKUg&s=10",
+    "position": [
+      -36.31831,
+      -57.68556
+    ],
+    "screens": [
+      {
+        "image": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcR78r-taf5BtKQnQrO4jgyvTPeMU5uVt6luYL17EXxKUg&s=10",
+        "text": "Plaza moreno"
+      },
+      {
+        "image": "",
+        "text": "Plaza moreno"
+      }
+    ],
+    "id": 2
   }
 ]
