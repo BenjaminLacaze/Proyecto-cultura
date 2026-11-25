@@ -1,30 +1,5 @@
 [
   {
-    "title": "Archivo historico",
-    "category": "edificio historico",
-    "section": "interes",
-    "image": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSju-hyjyYpHCO7A9ni84fOCQ7468ZJR08bNHgnJNaZ6hwFVJWg21ujkOvl&s=10",
-    "position": [
-      -36.31472,
-      -57.67893
-    ],
-    "screens": [
-      {
-        "image": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSju-hyjyYpHCO7A9ni84fOCQ7468ZJR08bNHgnJNaZ6hwFVJWg21ujkOvl&s=10",
-        "text": "Archivo historico"
-      },
-      {
-        "image": "",
-        "text": "Hola "
-      },
-      {
-        "image": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSju-hyjyYpHCO7A9ni84fOCQ7468ZJR08bNHgnJNaZ6hwFVJWg21ujkOvl&s=10",
-        "text": "Adios"
-      }
-    ],
-    "id": 1
-  },
-  {
     "title": "Plaza Moreno",
     "category": "Plaza",
     "section": "plazas",
