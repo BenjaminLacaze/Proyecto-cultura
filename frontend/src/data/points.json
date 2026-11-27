@@ -57,5 +57,22 @@
       }
     ],
     "id": 4
+  },
+  {
+    "title": "Archivo Histórico Municipal",
+    "category": "Archivo",
+    "section": "interes",
+    "image": "/uploads/1795787370001-b7533a3e-d3ca-4f32-9c22-db33087a5410.jpg",
+    "position": [
+      -36.31392,
+      -57.67956
+    ],
+    "screens": [
+      {
+        "image": "/uploads/1795787382995-90d1273d-5721-49ac-b9da-34afb28fcf5e.jpg",
+        "text": "Un espacio dedicado a conservar y compartir la historia de nuestra ciudad. A través de documentos, fotografías, libros y objetos, resguardamos parte de la memoria de Dolores y de quienes construyeron su identidad a lo largo del tiempo."
+      }
+    ],
+    "id": 5
   }
 ]
